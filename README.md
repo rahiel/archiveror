@@ -14,9 +14,12 @@ will put the archive link in your clipboard, ready to be pasted (Control+V).
 There's also a hotkey for this, Control+Y, which can be changed at the
 preferences.
 
+Archiveror can be installed from the
+[Firefox Add-ons homepage](https://addons.mozilla.org/en-US/firefox/addon/archiveror/).
+
 Happy archiving!
 
-Privacy note: this extension will necessarily send your bookmarks to
+*Privacy note*: this extension will necessarily send your bookmarks to
 <https://archive.today>.
 
 ## Credits

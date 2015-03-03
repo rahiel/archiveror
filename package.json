@@ -21,6 +21,6 @@
             "title": "Open archive in new tab",
             "description": "Opens the archive link in a new tab when you archive the current page.",
             "type": "bool",
-            "value": false
+            "value": true
         }]
 }

@@ -2,7 +2,7 @@
     "name": "Archiveror",
     "author": "Rahiel Kasim",
     "description": "Archiveror will help you preserve the webpages you love.",
-    "version": "0.1",
+    "version": "0.1.1",
 
     "icons": { "16": "icon-16.png",
                "48": "icon-48.png",
@@ -12,7 +12,7 @@
         "tabs",
         "bookmarks",
         "storage",
-        "https://archive.today/"
+        "https://archive.is/"
     ],
 
     "background": {

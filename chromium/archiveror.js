@@ -1,11 +1,11 @@
 function archive(url, save) {
     var request = new XMLHttpRequest();
-    request.open("POST", "https://archive.today/submit/", true);
+    request.open("POST", "https://archive.is/submit/", true);
     request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     var params = "url=" + encodeURIComponent(url);
     request.onreadystatechange = function () {
         if (request.readyState == 4) {
-            var link = request.response.match(/(https?:\/\/archive.today\/\w+)/)[0];
+            var link = request.response.match(/(https?:\/\/archive.is\/\w+)/)[0];
             postArchive(url, link, save);
         }
     };

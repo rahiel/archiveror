@@ -12,7 +12,9 @@
         "tabs",
         "bookmarks",
         "storage",
-        "https://archive.is/"
+        "https://archive.is/",
+        "downloads",
+        "pageCapture"
     ],
 
     "background": {

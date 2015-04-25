@@ -60,11 +60,37 @@ function archiveClick (tab) {
             });
         }
         else {
-            archive(tab.url, false);
+            // Local save testing
+            saveLocal(tab);
+            // archive(tab.url, false);
         }
     });
 }
 chrome.browserAction.onClicked.addListener(archiveClick);
+
+function saveLocal(tab) {
+    chrome.pageCapture.saveAsMHTML({tabId: tab.id}, blobToDisk);
+    console.log(tab.title);
+    // validate tab.title
+    function blobToDisk (mhtmlData) {
+        var url = URL.createObjectURL(mhtmlData);
+        chrome.downloads.download({url: url,
+                                   filename: tab.title + ".mhtml"}, clearFile);
+    }
+
+    // Called after download starts
+    function clearFile (downloadId) {
+        chrome.downloads.search({id: downloadId}, function (DownloadItems) {
+            if (DownloadItems[0].state === "complete") {
+                chrome.downloads.erase({id: downloadId});
+            }
+            else {
+                // wait for 3s, and try to erase it then
+                window.setTimeout(clearFile, 3000, downloadId);
+            }
+        });
+    }
+}
 
 // Keyboard shortcut
 chrome.commands.onCommand.addListener(function (command) {

@@ -70,12 +70,10 @@ chrome.browserAction.onClicked.addListener(archiveClick);
 
 function saveLocal(tab) {
     chrome.pageCapture.saveAsMHTML({tabId: tab.id}, blobToDisk);
-    console.log(tab.title);
-    // validate tab.title
+    var filename = makeFilename(tab.title);
     function blobToDisk (mhtmlData) {
         var url = URL.createObjectURL(mhtmlData);
-        chrome.downloads.download({url: url,
-                                   filename: tab.title + ".mhtml"}, clearFile);
+        chrome.downloads.download({url: url, filename: filename}, clearFile);
     }
 
     // Called after download starts
@@ -89,6 +87,14 @@ function saveLocal(tab) {
                 window.setTimeout(clearFile, 3000, downloadId);
             }
         });
+    }
+
+    function makeFilename (title) {
+        // Windows disallows <>:"/\|?* in filenames, remove them
+        var name = title;
+        var re = /[<>:"/\\|?]/g;
+        name = title.replace(re, "").trim();
+        return name + ".mhtml";
     }
 }
 

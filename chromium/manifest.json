@@ -30,6 +30,11 @@
         "default_title": "Archive Page"
     },
 
+    "options_ui": {
+        "page": "options.html",
+        "chrome_style": true
+    },
+
     "commands": {
         "archive-page": {
             "suggested_key": {"default": "Ctrl+Y"},

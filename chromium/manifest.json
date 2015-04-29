@@ -2,7 +2,7 @@
     "name": "Archiveror",
     "author": "Rahiel Kasim",
     "description": "Archiveror will help you preserve the webpages you love.",
-    "version": "0.1.1",
+    "version": "0.3",
 
     "icons": { "16": "icon-16.png",
                "48": "icon-48.png",
@@ -38,7 +38,7 @@
     "commands": {
         "archive-page": {
             "suggested_key": {"default": "Ctrl+Y"},
-            "description": "Archive the current page"
+            "description": "Submit current page to archive.is"
         }
     },
 

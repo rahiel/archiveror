@@ -1,4 +1,4 @@
-function archive(url, save) {
+function archive_is(url, save) {
     var request = new XMLHttpRequest();
     request.open("POST", "https://archive.is/submit/", true);
     request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -59,21 +59,45 @@ function archiveClick (tab) {
                 chrome.tabs.create({"url": key[tab.url]});
             });
         }
-        else {
-            // Local save testing
-            saveLocal(tab);
-            // archive(tab.url, false);
-        }
+        else
+            archive(tab.url, false, tab);
     });
 }
 chrome.browserAction.onClicked.addListener(archiveClick);
 
-function saveLocal(tab) {
+function archive (url, save, tab) {
+    chrome.storage.sync.get({archiveMode: "online"}, userAction);
+
+    function userAction (items) {
+        if (items.archiveMode === "online")
+            archive_is(url, save);
+        else {
+            if (typeof tab === "undefined") {
+                chrome.tabs.query({url: url}, function (tabs) {
+                    saveLocal(tabs[0], save);
+                });
+            }
+            else
+                saveLocal(tab, save);
+        }
+    }
+}
+
+function saveLocal(tab, automatic) {
+    // ask user for input if automatic is false
+    // TODO: save archive file path
+    // TODO: use the archive subdirectory
     chrome.pageCapture.saveAsMHTML({tabId: tab.id}, blobToDisk);
-    var filename = makeFilename(tab.title);
+
     function blobToDisk (mhtmlData) {
+        var filename = makeFilename(tab.title);
         var url = URL.createObjectURL(mhtmlData);
-        chrome.downloads.download({url: url, filename: filename}, clearFile);
+        if (automatic === true)
+            chrome.downloads.download({url: url, filename: filename}, clearFile);
+        else {
+            chrome.downloads.download({url: url, filename: filename,
+                                       saveAs: true}, clearFile);
+        }
     }
 
     // Called after download starts
@@ -102,7 +126,7 @@ function saveLocal(tab) {
 chrome.commands.onCommand.addListener(function (command) {
     if (command === "archive-page") {
         chrome.tabs.query({active: true}, function (tabs) {
-            archive(tabs[0].url, false);
+            archive_is(tabs[0].url, false);
         });
     }
 });

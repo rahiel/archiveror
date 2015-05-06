@@ -44,15 +44,9 @@ function showArchive(url) {
     });
 }
 
-function newBookmark(id, bookmark) {
-    if (bookmark.hasOwnProperty("url")) {
-        archive(bookmark.url, true);
-    }
-}
-
 var buttonTitle = {default: "Archive Page", present: "Go to archived page"};
-// When user clicks on button
 function archiveClick (tab) {
+    // When user clicks on button
     chrome.browserAction.getTitle({tabId: tab.id}, function (text) {
         if (text === buttonTitle.present) {
             chrome.storage.local.get(tab.url, function (key) {
@@ -65,7 +59,8 @@ function archiveClick (tab) {
 }
 chrome.browserAction.onClicked.addListener(archiveClick);
 
-function archive (url, save, tab) {
+function archive (url, save, tab, bookmark) {
+    // tab and bookmark are optional
     chrome.storage.sync.get({archiveMode: "online"}, userAction);
 
     function userAction (items) {
@@ -73,27 +68,34 @@ function archive (url, save, tab) {
             archive_is(url, save);
         else {
             if (typeof tab === "undefined") {
-                chrome.tabs.query({url: url}, function (tabs) {
-                    saveLocal(tabs[0], save);
+                // tabs.query doesn't match fragment identifiers
+                url = url.split('#')[0];
+                chrome.tabs.query({"url": url}, function (tabs) {
+                    getPath(bookmark, function (path) {
+                        saveLocal(tabs[0], save, path);
+                    });
                 });
             }
             else
-                saveLocal(tab, save);
+                saveLocal(tab, save);  // will never need bookmark
         }
     }
 }
 
-function saveLocal(tab, automatic) {
+function saveLocal(tab, automatic, path) {
     // ask user for input if automatic is false
     // TODO: save archive file path
-    // TODO: use the archive subdirectory
     chrome.pageCapture.saveAsMHTML({tabId: tab.id}, blobToDisk);
 
     function blobToDisk (mhtmlData) {
         var filename = makeFilename(tab.title);
         var url = URL.createObjectURL(mhtmlData);
-        if (automatic === true)
-            chrome.downloads.download({url: url, filename: filename}, clearFile);
+        if (automatic === true) {
+            chrome.storage.sync.get({archiveDir: "Archiveror"}, function (items) {
+                filename = items.archiveDir + path + filename;
+                chrome.downloads.download({url: url, filename: filename}, clearFile);
+            });
+        }
         else {
             chrome.downloads.download({url: url, filename: filename,
                                        saveAs: true}, clearFile);
@@ -101,6 +103,7 @@ function saveLocal(tab, automatic) {
     }
 
     // Called after download starts
+    // maybe use chrome.downloads.setShelfEnabled instead?
     function clearFile (downloadId) {
         chrome.downloads.search({id: downloadId}, function (DownloadItems) {
             if (DownloadItems[0].state === "complete") {
@@ -131,8 +134,28 @@ chrome.commands.onCommand.addListener(function (command) {
     }
 });
 
-// At new Bookmark
+function newBookmark(id, bookmark) {
+    if (bookmark.hasOwnProperty("url")) {
+        archive(bookmark.url, true, undefined, bookmark);
+    }
+}
 chrome.bookmarks.onCreated.addListener(newBookmark);
+
+function getPath (bookmark, callback) {
+    var nodes = [];
+    getParent(bookmark);
+
+    function getParent(bookmark) {
+        chrome.bookmarks.get(bookmark.parentId, function (bookmarks) {
+            var node = bookmarks[0];
+            nodes.push(node.title);
+            if (node.parentId)
+                getParent(node);
+            else
+                callback(nodes.reverse().join('/') + '/');
+        });
+    }
+}
 
 // On page visit (check if it's a bookmark)
 function bookmarkVisit (tabId, changeInfo, tab) {

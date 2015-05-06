@@ -4,7 +4,7 @@
     "id": "archiveror@love.addons.mozilla.org",
     "icon": "./data/icon.png",
     "icon64": "./data/icon-64.png",
-    "description": "Archiveror will make automatic archives (snapshots) of pages you bookmark to preserve them exactly as they are right now, even if the original disappears from the web. These snapshots will be accessible at https://archive.today and Archiveror will remember them. It will also help you archive pages on demand.",
+    "description": "Archiveror will make automatic archives (snapshots) of pages you bookmark to preserve them exactly as they are right now, even if the original disappears from the web. These snapshots will be accessible at https://archive.is and Archiveror will remember them. It will also help you archive pages on demand.",
     "author": "Rahiel Kasim",
     "license": "MIT License (https://github.com/rahiel/archiveror/blob/master/LICENSE)",
     "version": "0.2.1",

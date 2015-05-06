@@ -22,7 +22,7 @@ Happy archiving!
 ## Installation
 
 * [Chromium](https://chrome.google.com/webstore/detail/archiveror/cpjdnekhgjdecpmjglkcegchhiijadpb)
-* [Firefox](https://addons.mozilla.org/en-US/firefox/addon/archiveror/)
+* [Firefox](https://addons.mozilla.org/firefox/addon/archiveror/)
 
 ## Credits
 

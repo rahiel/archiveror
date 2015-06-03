@@ -117,10 +117,10 @@ function saveLocal(tab, automatic, path) {
     }
 
     function makeFilename (title) {
-        // Windows disallows <>:"/\|?* in filenames, remove them
+        // Windows disallows <>:"/\|?* in filenames
         var name = title;
         var re = /[<>:"/\\|?]/g;
-        name = title.replace(re, "").trim();
+        name = title.replace(re, "_").trim();
         return name + ".mhtml";
     }
 }

@@ -14,6 +14,7 @@
         "storage",
         "https://archive.is/",
         "downloads",
+        "downloads.shelf",
         "pageCapture"
     ],
 
@@ -39,6 +40,10 @@
         "archive-page": {
             "suggested_key": {"default": "Ctrl+Y"},
             "description": "Submit current page to archive.is"
+        },
+        "save-local": {
+            "suggested_key": {"default": "Ctrl+Shift+S"},
+            "description": "Save current page locally as MHTML"
         }
     },
 

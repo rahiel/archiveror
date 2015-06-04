@@ -14,9 +14,9 @@ function archive_is(url, save) {
 
 function postArchive(url, link, save) {
     if (save === true) {
-        var key = {};
-        key[url] = link;
-        chrome.storage.local.set(key, function () {
+        var data = {};
+        data[url] = link;
+        chrome.storage.local.set(data, function () {
             showArchive(url);
         });
     }
@@ -26,22 +26,39 @@ function postArchive(url, link, save) {
     }
 }
 
-function showArchive(url) {
-    chrome.storage.local.get(url, function (key) {
-        if (key[url]) {
-            chrome.tabs.query({"url": url}, function (tabs) {
-                for (var i = 0; i < tabs.length; i++) {
-                    // Following changes reset automatically when the tab changes
-                    chrome.browserAction.setTitle({title: buttonTitle.present, tabId: tabs[i].id});
-                    chrome.browserAction.setBadgeText({text: "!", tabId: tabs[i].id});
-                    chrome.browserAction.setBadgeBackgroundColor({color: "#FFB90F", tabId: tabs[i].id});
-                }
-            });
-        }
-        else {
-            archive(url, true);
-        }
+function showArchive(url, bookmark) {
+    chrome.storage.sync.get({archiveMode: "online"}, function (items) {
+        if (items.archiveMode === "local")
+            showBadge('_' + url);
+        else
+            showBadge(url);
     });
+
+    function showBadge (url) {
+        chrome.storage.local.get(url, function (data) {
+            if (data[url]) {
+                var taburl = normalURL(url).split('#')[0];
+                chrome.tabs.query({"url": taburl}, function (tabs) {
+                    for (var i = 0; i < tabs.length; i++) {
+                        // Following changes reset automatically when the tab changes
+                        chrome.browserAction.setTitle({title: buttonTitle.present, tabId: tabs[i].id});
+                        chrome.browserAction.setBadgeText({text: "!", tabId: tabs[i].id});
+                        chrome.browserAction.setBadgeBackgroundColor({color: "#FFB90F", tabId: tabs[i].id});
+                    }
+                });
+            }
+            else {
+                archive(normalURL(url), true, undefined, bookmark);
+            }
+        });
+    }
+
+    function normalURL (url) {
+        if (url[0] === '_')
+            return url.slice(1);
+        else
+            return url;
+    }
 }
 
 var buttonTitle = {default: "Archive Page", present: "Go to archived page"};
@@ -49,8 +66,18 @@ function archiveClick (tab) {
     // When user clicks on button
     chrome.browserAction.getTitle({tabId: tab.id}, function (text) {
         if (text === buttonTitle.present) {
-            chrome.storage.local.get(tab.url, function (key) {
-                chrome.tabs.create({"url": key[tab.url]});
+            chrome.storage.sync.get({archiveMode: "online"}, function (items) {
+                if (items.archiveMode === "local") {
+                    chrome.storage.local.get('_' + tab.url, function (data) {
+                        var url = data['_' + tab.url]["filename"];
+                        chrome.tabs.create({"url": "file://" + url});
+                    });
+                }
+                else {
+                    chrome.storage.local.get(tab.url, function (key) {
+                        chrome.tabs.create({"url": key[tab.url]});
+                    });
+                }
             });
         }
         else
@@ -67,7 +94,7 @@ function archive (url, save, tab, bookmark) {
         if (items.archiveMode === "online")
             archive_is(url, save);
         else {
-            if (typeof tab === "undefined") {
+            if (typeof tab === "undefined") {  // for bookmark visit / creation
                 // tabs.query doesn't match fragment identifiers
                 url = url.split('#')[0];
                 chrome.tabs.query({"url": url}, function (tabs) {
@@ -84,34 +111,40 @@ function archive (url, save, tab, bookmark) {
 
 function saveLocal(tab, automatic, path) {
     // ask user for input if automatic is false
-    // TODO: save archive file path
     chrome.pageCapture.saveAsMHTML({tabId: tab.id}, blobToDisk);
 
     function blobToDisk (mhtmlData) {
         var filename = makeFilename(tab.title);
         var url = URL.createObjectURL(mhtmlData);
         if (automatic === true) {
+            chrome.downloads.setShelfEnabled(false); // disable download bar
             chrome.storage.sync.get({archiveDir: "Archiveror"}, function (items) {
                 filename = items.archiveDir + path + filename;
-                chrome.downloads.download({url: url, filename: filename}, clearFile);
+                chrome.downloads.download({url: url, filename: filename}, postSave);
             });
         }
         else {
             chrome.downloads.download({url: url, filename: filename,
-                                       saveAs: true}, clearFile);
+                                       saveAs: true}, postSave);
         }
     }
 
-    // Called after download starts
-    // maybe use chrome.downloads.setShelfEnabled instead?
-    function clearFile (downloadId) {
+    function postSave (downloadId) {
         chrome.downloads.search({id: downloadId}, function (DownloadItems) {
-            if (DownloadItems[0].state === "complete") {
-                chrome.downloads.erase({id: downloadId});
+            var download = DownloadItems[0];
+            if (download.state === "complete") {
+                chrome.downloads.setShelfEnabled(true);
+                var key = "_" + tab.url;
+                var value = {"id": download.id, "filename": download.filename};
+                var data = {};
+                data[key] = value;
+                chrome.storage.local.set(data, function () {
+                    showArchive(tab.url);
+                });
             }
             else {
-                // wait for 3s, and try to erase it then
-                window.setTimeout(clearFile, 3000, downloadId);
+                // wait for 2s, and try again
+                window.setTimeout(postSave, 2000, downloadId);
             }
         });
     }
@@ -125,12 +158,16 @@ function saveLocal(tab, automatic, path) {
     }
 }
 
-// Keyboard shortcut
+// Keyboard shortcuts
 chrome.commands.onCommand.addListener(function (command) {
     if (command === "archive-page") {
-        chrome.tabs.query({active: true}, function (tabs) {
-            archive_is(tabs[0].url, false);
-        });
+        var action = function (tabs) {archive_is(tabs[0].url, false);};
+    }
+    else if (command === "save-local") {
+        var action = function (tabs) {saveLocal(tabs[0], false);};
+    }
+    if (typeof action !== "undefined") {
+        chrome.tabs.query({active: true, lastFocusedWindow: true}, action);
     }
 });
 
@@ -162,7 +199,8 @@ function bookmarkVisit (tabId, changeInfo, tab) {
     if (changeInfo.status === "complete") {
         chrome.bookmarks.search({url: tab.url}, function (bookmarks) {
             if (bookmarks.length > 0 && bookmarks[0].url === tab.url) {
-                showArchive(bookmarks[0].url);
+                // bookmarks[0] propagates to archive function
+                showArchive(bookmarks[0].url, bookmarks[0]);
             }
         });
     }

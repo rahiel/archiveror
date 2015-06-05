@@ -109,6 +109,37 @@ function archive (url, save, tab, bookmark) {
     }
 }
 
+function silentDownload(url, filename, path, callback) {
+    // silently download to archiveDir
+    chrome.downloads.setShelfEnabled(false); // disable download bar
+    chrome.storage.sync.get({archiveDir: "Archiveror"}, function (items) {
+        filename = items.archiveDir + path + filename;
+        chrome.downloads.download({url: url, filename: filename}, callback);
+    });
+}
+
+function saveDownload(downloadId, url) {
+    // save download id and path in local
+    chrome.downloads.search({id: downloadId}, function (DownloadItems) {
+        var download = DownloadItems[0];
+        if (download.state === "complete") {
+            chrome.downloads.setShelfEnabled(true);
+            var key = "_" + url;
+            var value = {"id": download.id, "filename": download.filename};
+            var data = {};
+            data[key] = value;
+            chrome.storage.local.set(data, function () {
+                showArchive(url);
+            });
+        }
+        else {
+            // wait for 200ms, and try again
+            // TODO: testing time bug
+            window.setTimeout(saveDownload, 5000, downloadId, url);
+        }
+    });
+}
+
 function saveLocal(tab, automatic, path) {
     // ask user for input if automatic is false
     chrome.pageCapture.saveAsMHTML({tabId: tab.id}, blobToDisk);
@@ -117,36 +148,16 @@ function saveLocal(tab, automatic, path) {
         var filename = makeFilename(tab.title);
         var url = URL.createObjectURL(mhtmlData);
         if (automatic === true) {
-            chrome.downloads.setShelfEnabled(false); // disable download bar
-            chrome.storage.sync.get({archiveDir: "Archiveror"}, function (items) {
-                filename = items.archiveDir + path + filename;
-                chrome.downloads.download({url: url, filename: filename}, postSave);
-            });
+            silentDownload(url, filename, path, postSave);
         }
         else {
             chrome.downloads.download({url: url, filename: filename,
                                        saveAs: true}, postSave);
         }
-    }
 
-    function postSave (downloadId) {
-        chrome.downloads.search({id: downloadId}, function (DownloadItems) {
-            var download = DownloadItems[0];
-            if (download.state === "complete") {
-                chrome.downloads.setShelfEnabled(true);
-                var key = "_" + tab.url;
-                var value = {"id": download.id, "filename": download.filename};
-                var data = {};
-                data[key] = value;
-                chrome.storage.local.set(data, function () {
-                    showArchive(tab.url);
-                });
-            }
-            else {
-                // wait for 2s, and try again
-                window.setTimeout(postSave, 2000, downloadId);
-            }
-        });
+        function postSave(downloadId) {
+            saveDownload(downloadId, tab.url);
+        }
     }
 
     function makeFilename (title) {
@@ -206,3 +217,37 @@ function bookmarkVisit (tabId, changeInfo, tab) {
     }
 }
 chrome.tabs.onUpdated.addListener(bookmarkVisit);
+
+function moveLocal(id, moveInfo) {
+    // bug: download will not move if saveDownload hasn't finished yet
+    // move local archives on bookmark moving
+    chrome.bookmarks.get(id, moveBookmark);
+
+    function moveBookmark(bookmarks) {
+        var bookmark = bookmarks[0];
+        var key = '_' + bookmark.url;
+        if (bookmark.hasOwnProperty("url")) {
+            chrome.storage.local.get(key, function (items) {
+                var data = items[key];
+                // check if we need to move anything
+                console.log(data, typeof data === "undefined");
+                if (typeof data === "undefined") return;  // quit
+                var downloadId = data.id;
+                var url = data.filename;  // absolute file path
+                var filename = url.split('/').slice(-1)[0];
+                getPath(bookmark, function (path) {
+                    silentDownload("file://" + url, filename, path, function (newId) {
+                        chrome.downloads.removeFile(downloadId, function () {
+                            saveDownload(newId, bookmark.url);
+                        });
+                    });
+                });
+            });
+        }
+        else {  // bookmark is a directory
+            // TODO
+            console.log("directory");
+        }
+    }
+}
+chrome.bookmarks.onMoved.addListener(moveLocal);

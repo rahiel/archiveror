@@ -27,6 +27,7 @@ function postArchive(url, link, save) {
 }
 
 function showArchive(url, bookmark) {
+    // Notify user if we have an archive of the current page
     chrome.storage.sync.get({archiveMode: "online"}, function (items) {
         if (items.archiveMode === "local")
             showBadge('_' + url);
@@ -80,7 +81,7 @@ function archiveClick (tab) {
                 }
             });
         }
-        else
+        else if (text === buttonTitle.default)
             archive(tab.url, false, tab);
     });
 }
@@ -98,6 +99,7 @@ function archive (url, save, tab, bookmark) {
                 // tabs.query doesn't match fragment identifiers
                 url = url.split('#')[0];
                 chrome.tabs.query({"url": url}, function (tabs) {
+                    downloadBlock.push(tabs[0].id);
                     getPath(bookmark, function (path) {
                         saveLocal(tabs[0], save, path);
                     });
@@ -114,9 +116,15 @@ function silentDownload(url, filename, path, callback) {
     chrome.downloads.setShelfEnabled(false); // disable download bar
     chrome.storage.sync.get({archiveDir: "Archiveror"}, function (items) {
         filename = items.archiveDir + path + filename;
-        chrome.downloads.download({url: url, filename: filename}, callback);
+        chrome.downloads.download({url: url, filename: filename,
+                                   conflictAction: "overwrite"}, callback);
     });
 }
+
+// When there's something in downloadBlock, moveLocal will wait on already
+// moving the (unfinished!) download. This should also prevent bookmarkVisit
+// from double archiving a page.
+var downloadBlock = [];
 
 function saveDownload(downloadId, url) {
     // save download id and path in local
@@ -129,34 +137,45 @@ function saveDownload(downloadId, url) {
             var data = {};
             data[key] = value;
             chrome.storage.local.set(data, function () {
+                downloadBlock.pop(); // unblock moveLocal for bookmark creation
                 showArchive(url);
             });
         }
         else {
             // wait for 200ms, and try again
-            // TODO: testing time bug
-            window.setTimeout(saveDownload, 5000, downloadId, url);
+            window.setTimeout(saveDownload, 200, downloadId, url);
         }
     });
 }
 
 function saveLocal(tab, automatic, path) {
-    // ask user for input if automatic is false
+    // save page locally in MHTML format
+    // ask user for input if automatic is false, else silently download
+    if (tab.status !== "complete") {
+        // Only save page after it has fully loaded
+        chrome.browserAction.setTitle({title: "Please wait!", tabId: tab.id});
+        chrome.browserAction.setBadgeText({text: "WAIT", tabId: tab.id});
+        chrome.browserAction.setBadgeBackgroundColor({color: "#d80f30", tabId: tab.id});
+        window.setTimeout(function () {
+            chrome.tabs.get(tab.id, function (newTab) {
+                saveLocal(newTab, automatic, path);
+            });
+        }, 200);
+        return;
+    }
+
     chrome.pageCapture.saveAsMHTML({tabId: tab.id}, blobToDisk);
 
     function blobToDisk (mhtmlData) {
         var filename = makeFilename(tab.title);
         var url = URL.createObjectURL(mhtmlData);
         if (automatic === true) {
-            silentDownload(url, filename, path, postSave);
+            silentDownload(url, filename, path, function (downloadId) {
+                saveDownload(downloadId, tab.url);
+            });
         }
         else {
-            chrome.downloads.download({url: url, filename: filename,
-                                       saveAs: true}, postSave);
-        }
-
-        function postSave(downloadId) {
-            saveDownload(downloadId, tab.url);
+            chrome.downloads.download({url: url, filename: filename, saveAs: true});
         }
     }
 
@@ -208,6 +227,8 @@ function getPath (bookmark, callback) {
 // On page visit (check if it's a bookmark)
 function bookmarkVisit (tabId, changeInfo, tab) {
     if (changeInfo.status === "complete") {
+        // prevent visit triggering a double archive download (on bookmark creation)
+        if (downloadBlock.indexOf(tabId) > -1) return;
         chrome.bookmarks.search({url: tab.url}, function (bookmarks) {
             if (bookmarks.length > 0 && bookmarks[0].url === tab.url) {
                 // bookmarks[0] propagates to archive function
@@ -219,18 +240,21 @@ function bookmarkVisit (tabId, changeInfo, tab) {
 chrome.tabs.onUpdated.addListener(bookmarkVisit);
 
 function moveLocal(id, moveInfo) {
-    // bug: download will not move if saveDownload hasn't finished yet
     // move local archives on bookmark moving
+    if (downloadBlock.length > 0) {
+        window.setTimeout(moveLocal, 300, id, moveInfo);
+        return;
+    }
+
     chrome.bookmarks.get(id, moveBookmark);
 
     function moveBookmark(bookmarks) {
         var bookmark = bookmarks[0];
-        var key = '_' + bookmark.url;
         if (bookmark.hasOwnProperty("url")) {
+            var key = '_' + bookmark.url;
             chrome.storage.local.get(key, function (items) {
                 var data = items[key];
                 // check if we need to move anything
-                console.log(data, typeof data === "undefined");
                 if (typeof data === "undefined") return;  // quit
                 var downloadId = data.id;
                 var url = data.filename;  // absolute file path
@@ -238,6 +262,7 @@ function moveLocal(id, moveInfo) {
                 getPath(bookmark, function (path) {
                     silentDownload("file://" + url, filename, path, function (newId) {
                         chrome.downloads.removeFile(downloadId, function () {
+                            downloadBlock.push(null);
                             saveDownload(newId, bookmark.url);
                         });
                     });

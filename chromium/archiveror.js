@@ -286,18 +286,6 @@ var bookmarkBlock = [];
 var bookmarkTree;
 
 function getBookmarkTree() {
-    if (bookmarkBlock.length === 0) {
-        chrome.bookmarks.getTree(function(bookmarks) {
-            bookmarkTree = bookmarks[0];
-        });
-    }
-    else {
-        window.setTimeout(getBookmarkTree, 200);
-    }
-}
-getBookmarkTree();
-
-function getBookmarkTree() {
     if (bookmarkBlock.length > 0) {
         window.setTimeout(getBookmarkTree, 200);
         return;
@@ -306,6 +294,7 @@ function getBookmarkTree() {
         bookmarkTree = bookmarks[0];
     });
 }
+getBookmarkTree();
 
 function findBookmark(tree, parentId, index, callback) {
     // find bookmark in bookmarkTree

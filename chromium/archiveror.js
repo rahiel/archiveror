@@ -40,12 +40,7 @@ function showArchive(url, bookmark) {
             if (data[url]) {
                 var taburl = normalURL(url).split('#')[0];
                 chrome.tabs.query({"url": taburl}, function (tabs) {
-                    for (var i = 0; i < tabs.length; i++) {
-                        // Following changes reset automatically when the tab changes
-                        chrome.browserAction.setTitle({title: buttonTitle.present, tabId: tabs[i].id});
-                        chrome.browserAction.setBadgeText({text: "!", tabId: tabs[i].id});
-                        chrome.browserAction.setBadgeBackgroundColor({color: "#FFB90F", tabId: tabs[i].id});
-                    }
+                    changeBadge(tabs, buttonTitle.present, "!", "#FFB90F");
                 });
             }
             else {
@@ -59,6 +54,15 @@ function showArchive(url, bookmark) {
             return url.slice(1);
         else
             return url;
+    }
+}
+
+function changeBadge(tabs, title, badgeText, badgeColor) {
+    for (var i = 0; i < tabs.length; i++) {
+        // Following changes reset automatically when the tab changes
+        chrome.browserAction.setTitle({title: title, tabId: tabs[i].id});
+        chrome.browserAction.setBadgeText({text: badgeText, tabId: tabs[i].id});
+        chrome.browserAction.setBadgeBackgroundColor({color: badgeColor, tabId: tabs[i].id});
     }
 }
 
@@ -153,9 +157,7 @@ function saveLocal(tab, automatic, path) {
     // ask user for input if automatic is false, else silently download
     if (tab.status !== "complete") {
         // Only save page after it has fully loaded
-        chrome.browserAction.setTitle({title: "Please wait!", tabId: tab.id});
-        chrome.browserAction.setBadgeText({text: "WAIT", tabId: tab.id});
-        chrome.browserAction.setBadgeBackgroundColor({color: "#d80f30", tabId: tab.id});
+        changeBadge([tab], "Please wait!", "WAIT", "#d80f30");
         window.setTimeout(function () {
             chrome.tabs.get(tab.id, function (newTab) {
                 saveLocal(newTab, automatic, path);
@@ -204,6 +206,7 @@ chrome.commands.onCommand.addListener(function (command) {
 function newBookmark(id, bookmark) {
     if (bookmark.hasOwnProperty("url")) {
         archive(bookmark.url, true, undefined, bookmark);
+        getBookmarkTree();
     }
 }
 chrome.bookmarks.onCreated.addListener(newBookmark);
@@ -228,6 +231,7 @@ function getPath (bookmark, callback) {
 function bookmarkVisit (tabId, changeInfo, tab) {
     if (changeInfo.status === "complete") {
         // prevent visit triggering a double archive download (on bookmark creation)
+        // bug: doesn't always work...
         if (downloadBlock.indexOf(tabId) > -1) return;
         chrome.bookmarks.search({url: tab.url}, function (bookmarks) {
             if (bookmarks.length > 0 && bookmarks[0].url === tab.url) {
@@ -276,3 +280,68 @@ function moveLocal(id, moveInfo) {
     }
 }
 chrome.bookmarks.onMoved.addListener(moveLocal);
+
+// Block updating bookmarkTree when there's something in bookmarkBlock
+var bookmarkBlock = [];
+var bookmarkTree;
+
+function getBookmarkTree() {
+    if (bookmarkBlock.length === 0) {
+        chrome.bookmarks.getTree(function(bookmarks) {
+            bookmarkTree = bookmarks[0];
+        });
+    }
+    else {
+        window.setTimeout(getBookmarkTree, 200);
+    }
+}
+getBookmarkTree();
+
+function getBookmarkTree() {
+    if (bookmarkBlock.length > 0) {
+        window.setTimeout(getBookmarkTree, 200);
+        return;
+    }
+    chrome.bookmarks.getTree(function(bookmarks) {
+        bookmarkTree = bookmarks[0];
+    });
+}
+
+function findBookmark(tree, parentId, index, callback) {
+    // find bookmark in bookmarkTree
+    if (tree.id === parentId) {
+        callback(tree.children[index]);
+    }
+    else {
+        for(var i = 0; i < tree.children.length; i++) {
+            if (tree.children[i].hasOwnProperty("children")) {
+                findBookmark(tree.children[i], parentId, index, callback);
+            }
+        }
+    }
+}
+
+function removeBookmark(id, removeInfo) {
+    bookmarkBlock.push(null);
+    findBookmark(bookmarkTree, removeInfo.parentId, removeInfo.index, deleteBookmark);
+
+    function deleteBookmark(bookmark) {
+        bookmarkBlock.pop();
+        getBookmarkTree();
+        var url = bookmark.url;
+
+        var key = '_' + url;
+        chrome.storage.local.get(key, function(items) {
+            // What if deleting the file fails?
+            chrome.downloads.removeFile(items[key].id);
+            chrome.storage.local.remove(key);
+        });
+
+        chrome.storage.local.remove(url);
+
+        chrome.tabs.query({"url": url}, function(tabs) {
+            changeBadge(tabs, buttonTitle.default, "", "#5dce2d");
+        });
+    }
+}
+chrome.bookmarks.onRemoved.addListener(removeBookmark);

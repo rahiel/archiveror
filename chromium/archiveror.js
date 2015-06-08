@@ -246,7 +246,7 @@ chrome.tabs.onUpdated.addListener(bookmarkVisit);
 function moveLocal(id, moveInfo) {
     // move local archives on bookmark moving
     if (downloadBlock.length > 0) {
-        window.setTimeout(moveLocal, 300, id, moveInfo);
+        window.setTimeout(moveLocal, 300, id);
         return;
     }
 
@@ -268,14 +268,19 @@ function moveLocal(id, moveInfo) {
                         chrome.downloads.removeFile(downloadId, function () {
                             downloadBlock.push(null);
                             saveDownload(newId, bookmark.url);
+                            getBookmarkTree();
                         });
                     });
                 });
             });
         }
         else {  // bookmark is a directory
-            // TODO
-            console.log("directory");
+            chrome.bookmarks.getChildren(bookmark.id, function(bookmarks) {
+                for(var i = 0; i < bookmarks.length; i++) {
+                    moveLocal(bookmarks[i].id);
+                }
+            });
+
         }
     }
 }
@@ -296,23 +301,33 @@ function getBookmarkTree() {
 }
 getBookmarkTree();
 
-function findBookmark(tree, parentId, index, callback) {
+function findBookmark(tree, id, callback) {
     // find bookmark in bookmarkTree
-    if (tree.id === parentId) {
-        callback(tree.children[index]);
-    }
-    else {
-        for(var i = 0; i < tree.children.length; i++) {
-            if (tree.children[i].hasOwnProperty("children")) {
-                findBookmark(tree.children[i], parentId, index, callback);
-            }
+    for(var i = 0; i < tree.children.length; i++) {
+        if (tree.children[i].id === id) {
+            callback(tree.children[i]);
+        }
+        else if (tree.children[i].hasOwnProperty("children")) {
+            findBookmark(tree.children[i], id, callback);
         }
     }
 }
 
-function removeBookmark(id, removeInfo) {
+function removeBookmark(id, moveInfo) {
     bookmarkBlock.push(null);
-    findBookmark(bookmarkTree, removeInfo.parentId, removeInfo.index, deleteBookmark);
+    findBookmark(bookmarkTree, id, deleteBookmarkNode);
+
+    function deleteBookmarkNode(bookmarkNode) {
+        if (bookmarkNode.hasOwnProperty("children")) {  // directory
+            for(var i = 0; i < bookmarkNode.children.length; i++) {
+                removeBookmark(bookmarkNode.children[i].id);
+            }
+            bookmarkBlock.pop();
+        }
+        else {
+            deleteBookmark(bookmarkNode);
+        }
+    }
 
     function deleteBookmark(bookmark) {
         bookmarkBlock.pop();

@@ -180,14 +180,18 @@ function saveLocal(tab, automatic, path) {
             chrome.downloads.download({url: url, filename: filename, saveAs: true});
         }
     }
+}
 
-    function makeFilename (title) {
-        // Windows disallows <>:"/\|?* in filenames
-        var name = title;
-        var re = /[<>:"/\\|?]/g;
-        name = title.replace(re, "_").trim();
-        return name + ".mhtml";
-    }
+function sanitizeFilename(title) {
+    // Windows disallows <>:"/\|?* in filenames
+    var name = title;
+    var re = /[<>:"/\\|?]/g;
+    name = title.replace(re, "_").trim();
+    return name;
+}
+
+function makeFilename(title) {
+    return sanitizeFilename(title) + ".mhtml";
 }
 
 // Keyboard shortcuts
@@ -218,7 +222,7 @@ function getPath (bookmark, callback) {
     function getParent(bookmark) {
         chrome.bookmarks.get(bookmark.parentId, function (bookmarks) {
             var node = bookmarks[0];
-            nodes.push(node.title);
+            nodes.push(sanitizeFilename(node.title));
             if (node.parentId)
                 getParent(node);
             else
@@ -262,7 +266,7 @@ function moveLocal(id, moveInfo) {
                 if (typeof data === "undefined") return;  // quit
                 var downloadId = data.id;
                 var url = data.filename;  // absolute file path
-                var filename = url.split('/').slice(-1)[0];
+                var filename = makeFilename(bookmark.title);
                 getPath(bookmark, function (path) {
                     silentDownload("file://" + url, filename, path, function (newId) {
                         chrome.downloads.removeFile(downloadId, function () {
@@ -285,6 +289,7 @@ function moveLocal(id, moveInfo) {
     }
 }
 chrome.bookmarks.onMoved.addListener(moveLocal);
+chrome.bookmarks.onChanged.addListener(moveLocal);
 
 // Block updating bookmarkTree when there's something in bookmarkBlock
 var bookmarkBlock = [];
@@ -313,7 +318,7 @@ function findBookmark(tree, id, callback) {
     }
 }
 
-function removeBookmark(id, moveInfo) {
+function removeBookmark(id, removeInfo) {
     bookmarkBlock.push(null);
     findBookmark(bookmarkTree, id, deleteBookmarkNode);
 

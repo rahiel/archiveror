@@ -183,9 +183,9 @@ function saveLocal(tab, automatic, path) {
 }
 
 function sanitizeFilename(title) {
-    // Windows disallows <>:"/\|?* in filenames
+    // Chrome disallows <>:"/\|?*~ in filenames
     var name = title;
-    var re = /[<>:"/\\|?]/g;
+    var re = /[<>:"/\\|?*~]/g;
     name = title.replace(re, "_").trim();
     return name;
 }

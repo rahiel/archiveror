@@ -4,23 +4,25 @@
     "id": "archiveror@love.addons.mozilla.org",
     "icon": "./data/icon.png",
     "icon64": "./data/icon-64.png",
-    "description": "Archiveror will make automatic archives (snapshots) of pages you bookmark to preserve them exactly as they are right now, even if the original disappears from the web. These snapshots will be accessible at https://archive.is and Archiveror will remember them. It will also help you archive pages on demand.",
+    "description": "Archive the webpages you love",
+    "homepage": "https://github.com/rahiel/archiveror",
     "author": "Rahiel Kasim",
     "license": "MIT License (https://github.com/rahiel/archiveror/blob/master/LICENSE)",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "preferences": [
         {
             "name": "archiveKey",
             "title": "The hotkey to archive the current page with.",
-            "description": "Archive the current page when you press this hotkey. Accel means Control (Command on Mac). The archive url will be in your clipboard.",
+            "description": "Archive the current page. Accel means Control (Command on Mac). The archive url will be in your clipboard.",
             "type": "string",
             "value": "accel-Y"
         },
         {
             "name": "openPage",
             "title": "Open archive in new tab",
-            "description": "Opens the archive link in a new tab when you archive the current page.",
+            "description": "Open the archive link in a new tab when you archive a page.",
             "type": "bool",
             "value": true
-        }]
+        }],
+    "permissions": {"private-browsing": true}
 }

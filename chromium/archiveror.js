@@ -117,7 +117,6 @@ function archive (url, save, tab, bookmark) {
 
 function silentDownload(url, filename, path, callback) {
     // silently download to archiveDir
-    chrome.downloads.setShelfEnabled(false); // disable download bar
     chrome.storage.sync.get({archiveDir: "Archiveror"}, function (items) {
         filename = items.archiveDir + path + filename;
         chrome.downloads.download({url: url, filename: filename,
@@ -135,7 +134,6 @@ function saveDownload(downloadId, url) {
     chrome.downloads.search({id: downloadId}, function (DownloadItems) {
         var download = DownloadItems[0];
         if (download.state === "complete") {
-            chrome.downloads.setShelfEnabled(true);
             var key = "_" + url;
             var value = {"id": download.id, "filename": download.filename};
             var data = {};
@@ -144,6 +142,10 @@ function saveDownload(downloadId, url) {
                 downloadBlock.pop(); // unblock moveLocal for bookmark creation
                 showArchive(url);
             });
+            chrome.downloads.setShelfEnabled(false); // hide download shelf
+            window.setTimeout(function() {
+                chrome.downloads.setShelfEnabled(true);
+            }, 100);
         }
         else {
             // wait for 200ms, and try again
@@ -308,6 +310,7 @@ getBookmarkTree();
 
 function findBookmark(tree, id, callback) {
     // find bookmark in bookmarkTree
+    // TODO: make synchronous
     for(var i = 0; i < tree.children.length; i++) {
         if (tree.children[i].id === id) {
             callback(tree.children[i]);

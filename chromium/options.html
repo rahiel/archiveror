@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Archiveror Options</title>
+  <style type="text/css">
+   body {padding: 10px; line-height: 1.6; font-size: 14px}
+   input[type="radio"] {margin-right: 5px}
+  </style>
+</head>
+<body>
+  <h3>Archiving mode</h3>
+
+  <label for="online">
+    <input type="radio" name="mode" id="online" value="online">Online (archive.is)
+  </label>
+  <br>
+  <label for="local">
+    <input type="radio" name="mode" id="local" value="local">Local (MHTML)
+  </label>
+
+
+  <div id="local_options" style="display:none">
+    <h3>Archive Location</h3>
+    The subdirectory of your Downloads folder where local archives will be saved.
+    <table>
+      <tr>
+        <td><label for="dir">Archive subdirectory:</label></td>
+        <td><input type="text" id="dir"></td>
+      </tr>
+    </table>
+    The location of your Downloads folder can be changed at the advanced settings.
+    (<a href="https://support.google.com/chrome/answer/95574">instructions</a>)
+  </div>
+
+  <table>
+    <tr>
+      <td>
+        <button id="save">Save</button>
+      </td>
+      <td>
+        <b><div id="status" style="color:#3fba66"></div></b>
+      </td>
+    </tr>
+  </table>
+
+  <script src="options.js"></script>
+</body>
+</html>

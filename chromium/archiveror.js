@@ -119,7 +119,7 @@ function silentDownload(url, filename, path, callback) {
     // silently download to archiveDir
     chrome.storage.sync.get({archiveDir: "Archiveror"}, function (items) {
         filename = items.archiveDir + path + filename;
-        chrome.downloads.download({url: url, filename: filename,
+        chrome.downloads.download({url: url, filename: filename, saveAs: false,
                                    conflictAction: "overwrite"}, callback);
     });
 }

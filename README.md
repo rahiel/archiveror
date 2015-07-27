@@ -19,6 +19,18 @@ Happy archiving!
 *Privacy note*: this extension will necessarily send your bookmarks to
 <https://archive.is>.
 
+## Local Saving
+(Currently for Chrome only)
+
+Archiveror can also make local copies of webpages. One page will be saved in a
+single [MHTML](https://en.wikipedia.org/wiki/MHTML) file. Bookmarks will be
+automatically saved in your Downloads directory, organized just like your
+bookmarks. Pages can also be manually saved by either clicking the button or
+pressing Ctrl+Shift+S.
+
+To enable local archiving mode, right click the Archiveror button, go to the
+options and then pick "Local".
+
 ## Installation
 
 * [Chromium](https://chrome.google.com/webstore/detail/archiveror/cpjdnekhgjdecpmjglkcegchhiijadpb)

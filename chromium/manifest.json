@@ -1,7 +1,7 @@
 {
     "name": "Archiveror",
     "author": "Rahiel Kasim",
-    "description": "Archive webpages on archive.is or on your own computer in MHTML format. Archiveror will also automatically archive your bookmarks, so you will never lose the pages you love.",
+    "description": "Archive webpages on archive.is or on your own computer in MHTML format. Archiveror will also automatically archive your bookmarks.",
     "version": "0.3.1",
 
     "icons": { "16": "icon-16.png",

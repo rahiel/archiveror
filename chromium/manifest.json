@@ -38,7 +38,7 @@
 
     "commands": {
         "archive-page": {
-            "suggested_key": {"default": "Ctrl+Y"},
+            "suggested_key": {"default": "Alt+Y"},
             "description": "Submit current page to archive.is"
         },
         "save-local": {

@@ -11,8 +11,7 @@ with Archiveror enabled.
 
 In addition you can also archive the current page by clicking the icon. This
 will put the archive link in your clipboard (Firefox only), ready to be pasted.
-There's also a hotkey for this, Control+Y, which can be changed at the
-preferences.
+There's also a hotkey for this, Alt+Y, which can be changed at the preferences.
 
 Happy archiving!
 

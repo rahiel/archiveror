@@ -16,13 +16,7 @@
             "description": "Archive the current page. Accel means Control (Command on Mac). The archive url will be in your clipboard.",
             "type": "string",
             "value": "accel-Y"
-        },
-        {
-            "name": "openPage",
-            "title": "Open archive in new tab",
-            "description": "Open the archive link in a new tab when you archive a page.",
-            "type": "bool",
-            "value": true
-        }],
+        }
+    ],
     "permissions": {"private-browsing": true}
 }

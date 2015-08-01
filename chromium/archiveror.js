@@ -1,29 +1,29 @@
-function archive_is(url, save) {
+function archive_is(url) {
     var request = new XMLHttpRequest();
     request.open("POST", "https://archive.is/submit/", true);
     request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-    var params = "url=" + encodeURIComponent(url);
+    var params = "url=" + encodeURIComponent(url) + "&anyway=1";
     request.onreadystatechange = function () {
         if (request.readyState == 4) {
             var link = request.response.match(/(https?:\/\/archive.is\/\w+)/)[0];
-            postArchive(url, link, save);
+            postArchive(url, link);
         }
     };
     request.send(params);
 }
 
-function postArchive(url, link, save) {
-    if (save === true) {
-        var data = {};
-        data[url] = link;
-        chrome.storage.local.set(data, function () {
-            showArchive(url);
-        });
-    }
-    else {
-        // Preference option?
-        chrome.tabs.create({"url": link});
-    }
+function postArchive(url, link) {
+    var data = {};
+    data[url] = link;
+    chrome.storage.local.set(data, function () {
+        showArchive(url);
+    });
+}
+
+function archivePage(url) {
+    chrome.tabs.create({
+        url: "https://archive.is/?run=1&url=" + encodeURIComponent(url)
+    });
 }
 
 function showArchive(url, bookmark) {
@@ -96,8 +96,12 @@ function archive (url, save, tab, bookmark) {
     chrome.storage.sync.get({archiveMode: "online"}, userAction);
 
     function userAction (items) {
-        if (items.archiveMode === "online")
-            archive_is(url, save);
+        if (items.archiveMode === "online") {
+            if (save === true)
+                archive_is(url);
+            else
+                archivePage(url);
+        }
         else {
             if (typeof tab === "undefined") {  // for bookmark visit / creation
                 // tabs.query doesn't match fragment identifiers
@@ -199,7 +203,7 @@ function makeFilename(title) {
 // Keyboard shortcuts
 chrome.commands.onCommand.addListener(function (command) {
     if (command === "archive-page") {
-        var action = function (tabs) {archive_is(tabs[0].url, false);};
+        var action = function (tabs) {archivePage(tabs[0].url);};
     }
     else if (command === "save-local") {
         var action = function (tabs) {saveLocal(tabs[0], false);};

@@ -8,7 +8,7 @@
     "homepage": "https://github.com/rahiel/archiveror",
     "author": "Rahiel Kasim",
     "license": "MIT License (https://github.com/rahiel/archiveror/blob/master/LICENSE)",
-    "version": "0.2.2",
+    "version": "0.2.3",
     "preferences": [
         {
             "name": "archiveKey",

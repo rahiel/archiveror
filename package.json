@@ -2,6 +2,7 @@
     "name": "archiveror",
     "title": "Archiveror",
     "id": "archiveror@love.addons.mozilla.org",
+    "main": "lib/main.js",
     "icon": "./data/icon.png",
     "icon64": "./data/icon-64.png",
     "description": "Archive the webpages you love",

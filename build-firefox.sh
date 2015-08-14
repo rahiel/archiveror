@@ -10,4 +10,4 @@ cp package.json dist
 cp LICENSE dist
 
 cd dist
-cfx xpi
+jpm xpi

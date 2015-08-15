@@ -10,19 +10,26 @@ function save_options() {
 
     var dir = document.getElementById("dir").value;
     // TODO: check dir for forbidden characters
-    chrome.storage.sync.set({archiveMode: mode, archiveDir: dir}, function() {
+    var bookmarks = document.getElementById("bookmarks").checked;
+
+    chrome.storage.local.set({
+        archiveMode: mode, archiveDir: dir, archiveBookmarks: bookmarks
+    }, function() {
         message("Options saved.");
     });
 }
 
 function restore_options() {
-    // online is default mode
-    chrome.storage.sync.get({archiveMode: "online", archiveDir: "Archiveror"},
-                            set_options);
+    chrome.storage.local.get({
+        archiveMode: "online", archiveDir: "Archiveror", archiveBookmarks: true
+    }, set_options);
 
     function set_options (items) {
-        document.getElementById("dir").value = items.archiveDir;
+        if (items.archiveBookmarks === true) {
+            document.getElementById("bookmarks").checked = true;
+        }
 
+        document.getElementById("dir").value = items.archiveDir;
         if (items.archiveMode === "online")
             document.getElementById("online").checked = true;
         else {

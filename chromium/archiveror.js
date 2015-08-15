@@ -28,14 +28,14 @@ function archivePage(url) {
 
 function showArchive(url, bookmark) {
     // Notify user if we have an archive of the current page
-    chrome.storage.sync.get({archiveMode: "online"}, function (items) {
+    chrome.storage.local.get({archiveMode: "online", archiveBookmarks: true}, function (items) {
         if (items.archiveMode === "local")
-            showBadge('_' + url);
+            showBadge('_' + url, items.archiveBookmarks);
         else
-            showBadge(url);
+            showBadge(url, items.archiveBookmarks);
     });
 
-    function showBadge (url) {
+    function showBadge (url, archiveBookmarks) {
         chrome.storage.local.get(url, function (data) {
             if (data[url]) {
                 var taburl = normalURL(url).split('#')[0];
@@ -43,7 +43,7 @@ function showArchive(url, bookmark) {
                     changeBadge(tabs, buttonTitle.present, "!", "#FFB90F");
                 });
             }
-            else {
+            else if (archiveBookmarks === true) {
                 archive(normalURL(url), true, undefined, bookmark);
             }
         });
@@ -71,7 +71,7 @@ function archiveClick (tab) {
     // When user clicks on button
     chrome.browserAction.getTitle({tabId: tab.id}, function (text) {
         if (text === buttonTitle.present) {
-            chrome.storage.sync.get({archiveMode: "online"}, function (items) {
+            chrome.storage.local.get({archiveMode: "online"}, function (items) {
                 if (items.archiveMode === "local") {
                     chrome.storage.local.get('_' + tab.url, function (data) {
                         var url = data['_' + tab.url]["filename"];
@@ -93,7 +93,7 @@ chrome.browserAction.onClicked.addListener(archiveClick);
 
 function archive (url, save, tab, bookmark) {
     // tab and bookmark are optional
-    chrome.storage.sync.get({archiveMode: "online"}, userAction);
+    chrome.storage.local.get({archiveMode: "online"}, userAction);
 
     function userAction (items) {
         if (items.archiveMode === "online") {
@@ -121,7 +121,7 @@ function archive (url, save, tab, bookmark) {
 
 function silentDownload(url, filename, path, callback) {
     // silently download to archiveDir
-    chrome.storage.sync.get({archiveDir: "Archiveror"}, function (items) {
+    chrome.storage.local.get({archiveDir: "Archiveror"}, function (items) {
         filename = items.archiveDir + path + filename;
         chrome.downloads.download({url: url, filename: filename, saveAs: false,
                                    conflictAction: "overwrite"}, callback);
@@ -214,10 +214,12 @@ chrome.commands.onCommand.addListener(function (command) {
 });
 
 function newBookmark(id, bookmark) {
-    if (bookmark.hasOwnProperty("url")) {
-        archive(bookmark.url, true, undefined, bookmark);
-        getBookmarkTree();
-    }
+    chrome.storage.local.get({archiveBookmarks: true}, function(items) {
+        if (bookmark.hasOwnProperty("url") && items.archiveBookmarks === true) {
+            archive(bookmark.url, true, undefined, bookmark);
+            getBookmarkTree();
+        }
+    });
 }
 chrome.bookmarks.onCreated.addListener(newBookmark);
 
@@ -361,3 +363,7 @@ function removeBookmark(id, removeInfo) {
     }
 }
 chrome.bookmarks.onRemoved.addListener(removeBookmark);
+
+// settings switched to local
+// TODO: remove this in a next version
+chrome.storage.sync.clear();

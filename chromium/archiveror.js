@@ -363,7 +363,3 @@ function removeBookmark(id, removeInfo) {
     }
 }
 chrome.bookmarks.onRemoved.addListener(removeBookmark);
-
-// settings switched to local
-// TODO: remove this in a next version
-chrome.storage.sync.clear();

@@ -23,12 +23,17 @@ Happy archiving!
 
 Archiveror can also make local copies of webpages. One page will be saved in a
 single [MHTML](https://en.wikipedia.org/wiki/MHTML) file. Bookmarks will be
-automatically saved in your Downloads directory, organized just like your
-bookmarks. Pages can also be manually saved by either clicking the button or
-pressing Ctrl+Shift+S.
+saved automatically. Pages can also be manually saved by either clicking the
+button or pressing Ctrl+Shift+S.
 
-To enable local archiving mode, right click the Archiveror button, go to the
-options and then pick "Local".
+To enable local archiving, right click the Archiveror button, go to the options
+and then pick "Local".
+
+In local archiving mode your bookmarks will be saved in your Downloads directory
+following your bookmark structure. If you move your bookmarks around, Archiveror
+will mirror your changes and likewise move your local archives. For this to work
+you need to check "Allow access to file URLs" at the extensions page. Go to your
+extensions and enable it: <https://i.imgur.com/ahrfe3M.png>.
 
 ## Installation
 
@@ -37,12 +42,11 @@ options and then pick "Local".
 
 ## Credits
 
-Both the
+* Both the
 [floppy disk icon](https://openclipart.org/detail/211780/matt-icons_media-floppy-by-sixsixfive-211780)
 and the
 [star icon](https://openclipart.org/detail/212371/rodentia-icons_help-about-by-sixsixfive-212371)
 are by the artist [sixsixfive](https://sixsixfive.deviantart.com/) and were
 generously released into the public domain.
-
-This extension would not be possible without the free service provided by
+* This extension would not be possible without the free service provided by
 <https://archive.is>.

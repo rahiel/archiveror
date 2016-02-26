@@ -5,10 +5,10 @@
     "main": "lib/main.js",
     "icon": "data/icon.png",
     "icon64": "./data/icon-64.png",
-    "description": "Archive the webpages you love",
+    "description": "Archive the webpages you love.",
     "homepage": "https://github.com/rahiel/archiveror",
     "author": "Rahiel Kasim",
-    "license": "MIT License (https://github.com/rahiel/archiveror/blob/master/LICENSE)",
+    "license": "GPL-3.0+ (https://github.com/rahiel/archiveror/blob/master/LICENSE.txt)",
     "version": "0.2.5",
     "preferences": [
         {

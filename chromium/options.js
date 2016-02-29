@@ -14,7 +14,7 @@ function save_options() {
 
     chrome.storage.local.set({
         archiveMode: mode, archiveDir: dir, archiveBookmarks: bookmarks
-    }, function() {
+    }, function () {
         message("Options saved.");
     });
 }
@@ -24,7 +24,7 @@ function restore_options() {
         archiveMode: "online", archiveDir: "Archiveror", archiveBookmarks: true
     }, set_options);
 
-    function set_options (items) {
+    function set_options(items) {
         if (items.archiveBookmarks === true) {
             document.getElementById("bookmarks").checked = true;
         }
@@ -43,7 +43,7 @@ document.getElementById("save").addEventListener("click", save_options);
 document.getElementById("local").addEventListener("click", show_local);
 document.getElementById("online").addEventListener("click", show_local);
 
-function show_local () {
+function show_local() {
     var local = document.getElementById("local").checked;
     if (local === true)
         document.getElementById("local_options").style.display = "block";
@@ -51,10 +51,10 @@ function show_local () {
         document.getElementById("local_options").style.display = "none";
 }
 
-function message (text) {
+function message(text) {
     var status = document.getElementById("status");
     status.textContent = text;
-    setTimeout(function() {
+    setTimeout(function () {
         status.textContent = "";
     }, 3000);
 }

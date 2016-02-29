@@ -4,7 +4,7 @@ function archive_is(url) {
     request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     var params = "url=" + encodeURIComponent(url) + "&anyway=1";
     request.onreadystatechange = function () {
-        if (request.readyState == 4) {
+        if (request.readyState === 4) {
             var link = request.response.match(/(https?:\/\/archive.is\/\w+)/)[0];
             postArchive(url, link);
         }
@@ -35,21 +35,20 @@ function showArchive(url, bookmark) {
             showBadge(url, items.archiveBookmarks);
     });
 
-    function showBadge (url, archiveBookmarks) {
+    function showBadge(url, archiveBookmarks) {
         chrome.storage.local.get(url, function (data) {
             if (data[url]) {
                 var taburl = normalURL(url).split('#')[0];
                 chrome.tabs.query({"url": taburl}, function (tabs) {
                     changeBadge(tabs, buttonTitle.present, "!", "#FFB90F");
                 });
-            }
-            else if (archiveBookmarks === true) {
+            } else if (archiveBookmarks === true) {
                 archive(normalURL(url), true, undefined, bookmark);
             }
         });
     }
 
-    function normalURL (url) {
+    function normalURL(url) {
         if (url[0] === '_')
             return url.slice(1);
         else
@@ -67,42 +66,39 @@ function changeBadge(tabs, title, badgeText, badgeColor) {
 }
 
 var buttonTitle = {default: "Archive Page", present: "Go to archived page"};
-function archiveClick (tab) {
+function archiveClick(tab) {
     // When user clicks on button
     chrome.browserAction.getTitle({tabId: tab.id}, function (text) {
         if (text === buttonTitle.present) {
             chrome.storage.local.get({archiveMode: "online"}, function (items) {
                 if (items.archiveMode === "local") {
                     chrome.storage.local.get('_' + tab.url, function (data) {
-                        var url = data['_' + tab.url]["filename"];
+                        var url = data['_' + tab.url].filename;
                         chrome.tabs.create({"url": "file://" + url});
                     });
-                }
-                else {
+                } else {
                     chrome.storage.local.get(tab.url, function (key) {
                         chrome.tabs.create({"url": key[tab.url]});
                     });
                 }
             });
-        }
-        else if (text === buttonTitle.default)
+        } else if (text === buttonTitle.default)
             archive(tab.url, false, tab);
     });
 }
 chrome.browserAction.onClicked.addListener(archiveClick);
 
-function archive (url, save, tab, bookmark) {
+function archive(url, save, tab, bookmark) {
     // tab and bookmark are optional
     chrome.storage.local.get({archiveMode: "online"}, userAction);
 
-    function userAction (items) {
+    function userAction(items) {
         if (items.archiveMode === "online") {
             if (save === true)
                 archive_is(url);
             else
                 archivePage(url);
-        }
-        else {
+        } else {
             if (typeof tab === "undefined") {  // for bookmark visit / creation
                 // tabs.query doesn't match fragment identifiers
                 url = url.split('#')[0];
@@ -112,8 +108,7 @@ function archive (url, save, tab, bookmark) {
                         saveLocal(tabs[0], save, path);
                     });
                 });
-            }
-            else
+            } else
                 saveLocal(tab, save);  // will never need bookmark
         }
     }
@@ -147,11 +142,10 @@ function saveDownload(downloadId, url) {
                 showArchive(url);
             });
             chrome.downloads.setShelfEnabled(false); // hide download shelf
-            window.setTimeout(function() {
+            window.setTimeout(function () {
                 chrome.downloads.setShelfEnabled(true);
             }, 100);
-        }
-        else {
+        } else {
             // wait for 200ms, and try again
             window.setTimeout(saveDownload, 200, downloadId, url);
         }
@@ -174,15 +168,14 @@ function saveLocal(tab, automatic, path) {
 
     chrome.pageCapture.saveAsMHTML({tabId: tab.id}, blobToDisk);
 
-    function blobToDisk (mhtmlData) {
+    function blobToDisk(mhtmlData) {
         var filename = makeFilename(tab.title);
         var url = URL.createObjectURL(mhtmlData);
         if (automatic === true) {
             silentDownload(url, filename, path, function (downloadId) {
                 saveDownload(downloadId, tab.url);
             });
-        }
-        else {
+        } else {
             chrome.downloads.download({url: url, filename: filename, saveAs: true});
         }
     }
@@ -202,11 +195,11 @@ function makeFilename(title) {
 
 // Keyboard shortcuts
 chrome.commands.onCommand.addListener(function (command) {
+    var action;
     if (command === "archive-page") {
-        var action = function (tabs) {archivePage(tabs[0].url);};
-    }
-    else if (command === "save-local") {
-        var action = function (tabs) {saveLocal(tabs[0], false);};
+        action = function (tabs) { archivePage(tabs[0].url); };
+    } else if (command === "save-local") {
+        action = function (tabs) { saveLocal(tabs[0], false); };
     }
     if (typeof action !== "undefined") {
         chrome.tabs.query({active: true, lastFocusedWindow: true}, action);
@@ -214,7 +207,7 @@ chrome.commands.onCommand.addListener(function (command) {
 });
 
 function newBookmark(id, bookmark) {
-    chrome.storage.local.get({archiveBookmarks: true}, function(items) {
+    chrome.storage.local.get({archiveBookmarks: true}, function (items) {
         if (bookmark.hasOwnProperty("url") && items.archiveBookmarks === true) {
             archive(bookmark.url, true, undefined, bookmark);
             getBookmarkTree();
@@ -223,7 +216,7 @@ function newBookmark(id, bookmark) {
 }
 chrome.bookmarks.onCreated.addListener(newBookmark);
 
-function getPath (bookmark, callback) {
+function getPath(bookmark, callback) {
     var nodes = [];
     getParent(bookmark);
 
@@ -240,7 +233,7 @@ function getPath (bookmark, callback) {
 }
 
 // On page visit (check if it's a bookmark)
-function bookmarkVisit (tabId, changeInfo, tab) {
+function bookmarkVisit(tabId, changeInfo, tab) {
     if (changeInfo.status === "complete") {
         // prevent visit triggering a double archive download (on bookmark creation)
         // bug: doesn't always work...
@@ -285,10 +278,9 @@ function moveLocal(id, moveInfo) {
                     });
                 });
             });
-        }
-        else {  // bookmark is a directory
-            chrome.bookmarks.getChildren(bookmark.id, function(bookmarks) {
-                for(var i = 0; i < bookmarks.length; i++) {
+        } else {  // bookmark is a directory
+            chrome.bookmarks.getChildren(bookmark.id, function (bookmarks) {
+                for (var i = 0; i < bookmarks.length; i++) {
                     moveLocal(bookmarks[i].id);
                 }
             });
@@ -308,7 +300,7 @@ function getBookmarkTree() {
         window.setTimeout(getBookmarkTree, 200);
         return;
     }
-    chrome.bookmarks.getTree(function(bookmarks) {
+    chrome.bookmarks.getTree(function (bookmarks) {
         bookmarkTree = bookmarks[0];
     });
 }
@@ -317,11 +309,10 @@ getBookmarkTree();
 function findBookmark(tree, id, callback) {
     // find bookmark in bookmarkTree
     // TODO: make synchronous
-    for(var i = 0; i < tree.children.length; i++) {
+    for (var i = 0; i < tree.children.length; i++) {
         if (tree.children[i].id === id) {
             callback(tree.children[i]);
-        }
-        else if (tree.children[i].hasOwnProperty("children")) {
+        } else if (tree.children[i].hasOwnProperty("children")) {
             findBookmark(tree.children[i], id, callback);
         }
     }
@@ -333,12 +324,11 @@ function removeBookmark(id, removeInfo) {
 
     function deleteBookmarkNode(bookmarkNode) {
         if (bookmarkNode.hasOwnProperty("children")) {  // directory
-            for(var i = 0; i < bookmarkNode.children.length; i++) {
+            for (var i = 0; i < bookmarkNode.children.length; i++) {
                 removeBookmark(bookmarkNode.children[i].id);
             }
             bookmarkBlock.pop();
-        }
-        else {
+        } else {
             deleteBookmark(bookmarkNode);
         }
     }
@@ -349,7 +339,7 @@ function removeBookmark(id, removeInfo) {
         var url = bookmark.url;
 
         var key = '_' + url;
-        chrome.storage.local.get(key, function(items) {
+        chrome.storage.local.get(key, function (items) {
             // What if deleting the file fails?
             chrome.downloads.removeFile(items[key].id);
             chrome.storage.local.remove(key);
@@ -357,7 +347,7 @@ function removeBookmark(id, removeInfo) {
 
         chrome.storage.local.remove(url);
 
-        chrome.tabs.query({"url": url}, function(tabs) {
+        chrome.tabs.query({"url": url}, function (tabs) {
             changeBadge(tabs, buttonTitle.default, "", "#5dce2d");
         });
     }

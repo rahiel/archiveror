@@ -1,0 +1,35 @@
+{
+    "env": {
+        "browser": true,
+        "commonjs": true,
+        "es6": true,
+        "webextensions": true
+    },
+    "extends": "eslint:recommended",
+    "parserOptions": {
+        "sourceType": "module"
+    },
+    "rules": {
+        "indent": [2, 4],
+        "linebreak-style": [2, "unix"],
+        "quotes": 0,
+        "semi": [2, "always"],
+        "brace-style": [2, "1tbs", {"allowSingleLine": true}],
+        "comma-style": 2,
+        "eqeqeq": 2,
+        "dot-notation": 2,
+        "no-unused-vars": 1,
+        "no-spaced-func": 2,
+        "space-before-blocks": 2,
+        "space-before-function-paren": [2, {"anonymous": "always", "named": "never"}],
+        "space-in-parens": 2,
+        "space-infix-ops": 2,
+        "space-unary-ops": 2,
+        "keyword-spacing": 2,
+        "block-spacing": 2,
+        "key-spacing": 2,
+        "comma-spacing": 2,
+        "no-trailing-spaces": 2,
+        "eol-last": 2
+    }
+}

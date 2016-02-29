@@ -59,7 +59,7 @@ function archivePage() {
     tabs.open({
         url: "https://archive.is/?run=1&url=" +
             encodeURIComponent(tabs.activeTab.url),
-        onReady: function() {
+        onReady: function () {
             clipboard.set(tabs.activeTab.url);
         }});
 }
@@ -79,20 +79,19 @@ function showArchive(url) {
     if (url in data) {
         button.state("tab", showButton);
         // and reset the button when we change the page again
-        var currentTab = tabs.activeTab;
-        function resetButton() {
-            currentTab.once("ready", function () {
-                if (! (tabs.activeTab.url in data)) {
-                    button.state(currentTab, defaultButton);
-                }
-                else
-                    resetButton();
-            });
-        }
         resetButton();
-    }
-    else
+    } else
         autoArchive(url);
+
+    function resetButton() {
+        var currentTab = tabs.activeTab;
+        currentTab.once("ready", function () {
+            if (!(tabs.activeTab.url in data)) {
+                button.state(currentTab, defaultButton);
+            } else
+                resetButton();
+        });
+    }
 }
 
 function autoArchive(url) {
@@ -101,7 +100,7 @@ function autoArchive(url) {
     }
 }
 
-exports.main = function() {
+exports.main = function () {
     // archive newly made bookmarks
     bookmarks.on("added", autoArchive);
     // Inform user we have an archive of their bookmark
@@ -110,7 +109,7 @@ exports.main = function() {
     preferences.on("archiveKey", setArchiveKey);
 };
 
-exports.onUnload = function() {
+exports.onUnload = function () {
     bookmarks.removeListener("added", archive);
     bookmarks.removeListener("visited", showArchive);
     preferences.removeListener("archiveKey", setArchiveKey);

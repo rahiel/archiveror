@@ -1,0 +1,21 @@
+{
+  "name": "archiveror",
+  "license": "GPL-3.0+",
+  "author": "Rahiel Kasim",
+  "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1",
+      "lint": "eslint .",
+      "firefox": "jpm -b /usr/bin/firefox --addon-dir firefox run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rahiel/archiveror.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rahiel/archiveror/issues"
+  },
+  "devDependencies": {
+    "eslint": "^2.2.0",
+    "jpm": "^1.0.6"
+  }
+}

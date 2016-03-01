@@ -3,7 +3,7 @@
 var { emit, on, once, off } = require("sdk/event/core");
 
 var {Cc, Ci, Cu} = require("chrome");
-Cu.import("resource://gre/modules/XPCOMUtils.jsm", this);
+Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 var bookmarkService = Cc["@mozilla.org/browser/nav-bookmarks-service;1"]
         .getService(Ci.nsINavBookmarksService);
 

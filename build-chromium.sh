@@ -1,10 +1,13 @@
 #!/bin/sh
 # Run from archiveror root folder
 
-rm -rf dist/
-mkdir dist
-cp chromium/* dist
-cp LICENSE.txt dist
+dist="dist-chromium/"
 
-cd dist
+rm -rf "$dist"
+mkdir "$dist"
+find chromium/ -not -name "*.js" -exec cp '{}' "$dist" \;
+npm run build
+cp LICENSE.txt "$dist"
+
+cd "$dist"
 zip archiveror.zip ./*

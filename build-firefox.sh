@@ -1,13 +1,13 @@
 #!/bin/sh
 # Run from archiveror root folder
 
-rm -rf dist/
-mkdir dist
-mkdir dist/data
-cp firefox/data/*.png dist/data/
-cp -R firefox/lib/ dist/
-cp firefox/package.json dist
-cp LICENSE.txt dist
+dist="dist-firefox/"
 
-cd dist
-jpm xpi
+rm -rf "$dist"
+mkdir -p "$dist"/data
+cp firefox/data/*.png "$dist"/data/
+npm run build
+cp firefox/package.json "$dist"
+cp LICENSE.txt "$dist"
+
+npm run xpi

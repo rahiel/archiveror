@@ -1,6 +1,6 @@
 #!/bin/sh
 # Run from archiveror root folder
-
+set -e
 dist="dist-chromium/"
 
 rm -rf "$dist"

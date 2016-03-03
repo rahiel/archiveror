@@ -1,20 +1,20 @@
-var bookmarks = require("./bookmarks");
-var buttons = require('sdk/ui/button/action');
-var clipboard = require("sdk/clipboard");
-var { Hotkey } = require("sdk/hotkeys");
-var preferences = require("sdk/simple-prefs");
-var Request = require("sdk/request").Request;
-var ss = require("sdk/simple-storage");
-var tabs = require('sdk/tabs');
+const bookmarks = require("./bookmarks");
+const buttons = require('sdk/ui/button/action');
+const clipboard = require("sdk/clipboard");
+const Hotkey = require("sdk/hotkeys").Hotkey;
+const preferences = require("sdk/simple-prefs");
+const Request = require("sdk/request").Request;
+const ss = require("sdk/simple-storage");
+const tabs = require('sdk/tabs');
 
 function archive(url) {
     // silently submit url to archive.is
-    var r = Request({
+    const r = Request({
         url: "https://archive.is/submit/",
         content: {"url": url, "anyway": 1},
         onComplete: function (response) {
             // Extract link from response
-            var link = response.text.match(/(https?:\/\/archive.is\/\w+)/)[0];
+            let link = response.text.match(/(https?:\/\/archive.is\/\w+)/)[0];
             postArchive(url, link);
         }
     }).post();
@@ -28,22 +28,22 @@ function postArchive(url, link) {
 // Store archive links for bookmarks
 if (!ss.storage.data)
     ss.storage.data = {};
-var data = ss.storage.data;
+let data = ss.storage.data;
 
 
-var defaultButton = {label: "Archive Page",
-                     icon: {"16": "./icon-16.png",
-                            "32": "./icon-32.png",
-                            "64": "./icon-64.png"}
-                    };
+const defaultButton = {label: "Archive Page",
+                       icon: {"16": "./icon-16.png",
+                              "32": "./icon-32.png",
+                              "64": "./icon-64.png"}
+                      };
 
-var showButton = {label: "Go to archived page",
-                  icon: {"16": "./icon-16-star.png",
-                         "32": "./icon-32-star.png",
-                         "64": "./icon-64-star.png"}
-                 };
+const showButton = {label: "Go to archived page",
+                    icon: {"16": "./icon-16-star.png",
+                           "32": "./icon-32-star.png",
+                           "64": "./icon-64-star.png"}
+                   };
 
-var button = buttons.ActionButton({
+let button = buttons.ActionButton({
     id: "archive-button",
     label: defaultButton.label,
     icon: defaultButton.icon,
@@ -65,8 +65,11 @@ function archivePage() {
 }
 
 // Make a hotkey to archive current page
+let archiveKey;
 function setArchiveKey() {
-    var archiveKey = Hotkey({
+    if (archiveKey !== undefined)
+        archiveKey.destroy();
+    archiveKey = Hotkey({
         combo: preferences.prefs.archiveKey,
         onPress: archivePage
     });
@@ -84,7 +87,7 @@ function showArchive(url) {
         autoArchive(url);
 
     function resetButton() {
-        var currentTab = tabs.activeTab;
+        const currentTab = tabs.activeTab;
         currentTab.once("ready", function () {
             if (!(tabs.activeTab.url in data)) {
                 button.state(currentTab, defaultButton);

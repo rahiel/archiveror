@@ -1,13 +1,13 @@
 // from: https://developer.mozilla.org/en-US/Add-ons/SDK/Tutorials/Creating_event_targets (https://archive.today/O62L2)
 /* global XPCOMUtils */
-var { emit, on, once, off } = require("sdk/event/core");
+const {emit, on, once, off} = require("sdk/event/core");
 
-var {Cc, Ci, Cu} = require("chrome");
+const {Cc, Ci, Cu} = require("chrome");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
-var bookmarkService = Cc["@mozilla.org/browser/nav-bookmarks-service;1"]
-        .getService(Ci.nsINavBookmarksService);
+const bookmarkService = Cc["@mozilla.org/browser/nav-bookmarks-service;1"]
+          .getService(Ci.nsINavBookmarksService);
 
-var bookmarkObserver = {
+const bookmarkObserver = {
     onItemAdded: function (aItemId, aFolder, aIndex) {
         emit(exports, "added", bookmarkService.getBookmarkURI(aItemId).spec);
     },

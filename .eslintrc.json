@@ -30,6 +30,8 @@
         "key-spacing": 2,
         "comma-spacing": 2,
         "no-trailing-spaces": 2,
-        "eol-last": 2
+        "eol-last": 2,
+        "no-var": 2,
+        "prefer-const": 1
     }
 }

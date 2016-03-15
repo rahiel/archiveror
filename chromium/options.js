@@ -1,16 +1,16 @@
 function save_options() {
-    var radio = document.getElementsByName("mode");
-    var mode = "None";
-    for (var i = 0; i < radio.length; i++) {
+    let radio = document.getElementsByName("mode");
+    let mode = "None";
+    for (let i = 0; i < radio.length; i++) {
         if (radio[i].checked === true)
             mode = radio[i].value;
     }
     if (mode === "None")
         message("Please select a mode.");  // this should never happen
 
-    var dir = document.getElementById("dir").value;
+    let dir = document.getElementById("dir").value;
     // TODO: check dir for forbidden characters
-    var bookmarks = document.getElementById("bookmarks").checked;
+    let bookmarks = document.getElementById("bookmarks").checked;
 
     chrome.storage.local.set({
         archiveMode: mode, archiveDir: dir, archiveBookmarks: bookmarks
@@ -44,7 +44,7 @@ document.getElementById("local").addEventListener("click", show_local);
 document.getElementById("online").addEventListener("click", show_local);
 
 function show_local() {
-    var local = document.getElementById("local").checked;
+    let local = document.getElementById("local").checked;
     if (local === true)
         document.getElementById("local_options").style.display = "block";
     else
@@ -52,7 +52,7 @@ function show_local() {
 }
 
 function message(text) {
-    var status = document.getElementById("status");
+    let status = document.getElementById("status");
     status.textContent = text;
     setTimeout(function () {
         status.textContent = "";

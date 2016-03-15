@@ -1,11 +1,11 @@
 function archive_is(url) {
-    var request = new XMLHttpRequest();
+    let request = new XMLHttpRequest();
     request.open("POST", "https://archive.is/submit/", true);
     request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-    var params = "url=" + encodeURIComponent(url) + "&anyway=1";
+    let params = "url=" + encodeURIComponent(url) + "&anyway=1";
     request.onreadystatechange = function () {
         if (request.readyState === 4) {
-            var link = request.response.match(/(https?:\/\/archive.is\/\w+)/)[0];
+            let link = request.response.match(/(https?:\/\/archive.is\/\w+)/)[0];
             postArchive(url, link);
         }
     };
@@ -13,7 +13,7 @@ function archive_is(url) {
 }
 
 function postArchive(url, link) {
-    var data = {};
+    let data = {};
     data[url] = link;
     chrome.storage.local.set(data, function () {
         showArchive(url);
@@ -38,7 +38,7 @@ function showArchive(url, bookmark) {
     function showBadge(url, archiveBookmarks) {
         chrome.storage.local.get(url, function (data) {
             if (data[url]) {
-                var taburl = normalURL(url).split('#')[0];
+                let taburl = normalURL(url).split('#')[0];
                 chrome.tabs.query({"url": taburl}, function (tabs) {
                     changeBadge(tabs, buttonTitle.present, "!", "#FFB90F");
                 });
@@ -57,15 +57,16 @@ function showArchive(url, bookmark) {
 }
 
 function changeBadge(tabs, title, badgeText, badgeColor) {
-    for (var i = 0; i < tabs.length; i++) {
+    for (let t of tabs) {
         // Following changes reset automatically when the tab changes
-        chrome.browserAction.setTitle({title: title, tabId: tabs[i].id});
-        chrome.browserAction.setBadgeText({text: badgeText, tabId: tabs[i].id});
-        chrome.browserAction.setBadgeBackgroundColor({color: badgeColor, tabId: tabs[i].id});
+        chrome.browserAction.setTitle({title: title, tabId: t.id});
+        chrome.browserAction.setBadgeText({text: badgeText, tabId: t.id});
+        chrome.browserAction.setBadgeBackgroundColor({color: badgeColor, tabId: t.id});
     }
 }
 
-var buttonTitle = {default: "Archive Page", present: "Go to archived page"};
+const buttonTitle = {default: "Archive Page", present: "Go to archived page"};
+
 function archiveClick(tab) {
     // When user clicks on button
     chrome.browserAction.getTitle({tabId: tab.id}, function (text) {
@@ -73,7 +74,7 @@ function archiveClick(tab) {
             chrome.storage.local.get({archiveMode: "online"}, function (items) {
                 if (items.archiveMode === "local") {
                     chrome.storage.local.get('_' + tab.url, function (data) {
-                        var url = data['_' + tab.url].filename;
+                        let url = data['_' + tab.url].filename;
                         chrome.tabs.create({"url": "file://" + url});
                     });
                 } else {
@@ -126,16 +127,16 @@ function silentDownload(url, filename, path, callback) {
 // When there's something in downloadBlock, moveLocal will wait on already
 // moving the (unfinished!) download. This should also prevent bookmarkVisit
 // from double archiving a page.
-var downloadBlock = [];
+let downloadBlock = [];
 
 function saveDownload(downloadId, url) {
     // save download id and path in local
     chrome.downloads.search({id: downloadId}, function (DownloadItems) {
-        var download = DownloadItems[0];
+        let download = DownloadItems[0];
         if (download.state === "complete") {
-            var key = "_" + url;
-            var value = {"id": download.id, "filename": download.filename};
-            var data = {};
+            let key = "_" + url;
+            let value = {"id": download.id, "filename": download.filename};
+            let data = {};
             data[key] = value;
             chrome.storage.local.set(data, function () {
                 downloadBlock.pop(); // unblock moveLocal for bookmark creation
@@ -169,8 +170,8 @@ function saveLocal(tab, automatic, path) {
     chrome.pageCapture.saveAsMHTML({tabId: tab.id}, blobToDisk);
 
     function blobToDisk(mhtmlData) {
-        var filename = makeFilename(tab.title);
-        var url = URL.createObjectURL(mhtmlData);
+        let filename = makeFilename(tab.title);
+        let url = URL.createObjectURL(mhtmlData);
         if (automatic === true) {
             silentDownload(url, filename, path, function (downloadId) {
                 saveDownload(downloadId, tab.url);
@@ -183,8 +184,8 @@ function saveLocal(tab, automatic, path) {
 
 function sanitizeFilename(title) {
     // Chrome disallows <>:"/\|?*~ in filenames
-    var name = title;
-    var re = /[<>:"/\\|?*~]/g;
+    let name = title;
+    let re = /[<>:"/\\|?*~]/g;
     name = title.replace(re, "_").trim();
     return name;
 }
@@ -195,7 +196,7 @@ function makeFilename(title) {
 
 // Keyboard shortcuts
 chrome.commands.onCommand.addListener(function (command) {
-    var action;
+    let action;
     if (command === "archive-page") {
         action = function (tabs) { archivePage(tabs[0].url); };
     } else if (command === "save-local") {
@@ -217,12 +218,12 @@ function newBookmark(id, bookmark) {
 chrome.bookmarks.onCreated.addListener(newBookmark);
 
 function getPath(bookmark, callback) {
-    var nodes = [];
+    let nodes = [];
     getParent(bookmark);
 
     function getParent(bookmark) {
         chrome.bookmarks.get(bookmark.parentId, function (bookmarks) {
-            var node = bookmarks[0];
+            let node = bookmarks[0];
             nodes.push(sanitizeFilename(node.title));
             if (node.parentId)
                 getParent(node);
@@ -258,16 +259,16 @@ function moveLocal(id, moveInfo) {
     chrome.bookmarks.get(id, moveBookmark);
 
     function moveBookmark(bookmarks) {
-        var bookmark = bookmarks[0];
+        let bookmark = bookmarks[0];
         if (bookmark.hasOwnProperty("url")) {
-            var key = '_' + bookmark.url;
+            let key = '_' + bookmark.url;
             chrome.storage.local.get(key, function (items) {
-                var data = items[key];
+                let data = items[key];
                 // check if we need to move anything
                 if (typeof data === "undefined") return;  // quit
-                var downloadId = data.id;
-                var url = data.filename;  // absolute file path
-                var filename = makeFilename(bookmark.title);
+                let downloadId = data.id;
+                let url = data.filename;  // absolute file path
+                let filename = makeFilename(bookmark.title);
                 getPath(bookmark, function (path) {
                     silentDownload("file://" + url, filename, path, function (newId) {
                         chrome.downloads.removeFile(downloadId, function () {
@@ -280,8 +281,8 @@ function moveLocal(id, moveInfo) {
             });
         } else {  // bookmark is a directory
             chrome.bookmarks.getChildren(bookmark.id, function (bookmarks) {
-                for (var i = 0; i < bookmarks.length; i++) {
-                    moveLocal(bookmarks[i].id);
+                for (let b of bookmarks) {
+                    moveLocal(b.id);
                 }
             });
 
@@ -292,8 +293,8 @@ chrome.bookmarks.onMoved.addListener(moveLocal);
 chrome.bookmarks.onChanged.addListener(moveLocal);
 
 // Block updating bookmarkTree when there's something in bookmarkBlock
-var bookmarkBlock = [];
-var bookmarkTree;
+let bookmarkBlock = [];
+let bookmarkTree;
 
 function getBookmarkTree() {
     if (bookmarkBlock.length > 0) {
@@ -309,7 +310,7 @@ getBookmarkTree();
 function findBookmark(tree, id, callback) {
     // find bookmark in bookmarkTree
     // TODO: make synchronous
-    for (var i = 0; i < tree.children.length; i++) {
+    for (let i = 0; i < tree.children.length; i++) {
         if (tree.children[i].id === id) {
             callback(tree.children[i]);
         } else if (tree.children[i].hasOwnProperty("children")) {
@@ -324,7 +325,7 @@ function removeBookmark(id, removeInfo) {
 
     function deleteBookmarkNode(bookmarkNode) {
         if (bookmarkNode.hasOwnProperty("children")) {  // directory
-            for (var i = 0; i < bookmarkNode.children.length; i++) {
+            for (let i = 0; i < bookmarkNode.children.length; i++) {
                 removeBookmark(bookmarkNode.children[i].id);
             }
             bookmarkBlock.pop();
@@ -336,9 +337,9 @@ function removeBookmark(id, removeInfo) {
     function deleteBookmark(bookmark) {
         bookmarkBlock.pop();
         getBookmarkTree();
-        var url = bookmark.url;
+        let url = bookmark.url;
 
-        var key = '_' + url;
+        let key = '_' + url;
         chrome.storage.local.get(key, function (items) {
             // What if deleting the file fails?
             chrome.downloads.removeFile(items[key].id);

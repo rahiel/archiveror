@@ -1,0 +1,7 @@
+language: node_js
+node_js:
+  - "stable"
+script:
+  - ./build-chromium.sh
+  - ./build-firefox.sh
+  - npm run lint

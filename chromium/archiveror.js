@@ -21,9 +21,38 @@ function postArchive(url, link) {
 }
 
 function archivePage(url) {
-    chrome.tabs.create({
-        url: "https://archive.is/?run=1&url=" + encodeURIComponent(url)
+    let tabId, link = "https://archive.is/?run=1&url=" + encodeURIComponent(url);
+    chrome.tabs.create({url: link}, function (tab) {
+        tabId = tab.id;
+        // support updating clipboard with new link from archive.is "save the page again"
+        chrome.tabs.onUpdated.addListener(url_to_clipboard);
+        chrome.tabs.onRemoved.addListener(url_to_clipboard);
     });
+
+    let re = /https?\:\/\/(www)?archive\.is.*/;
+    function url_to_clipboard(tab_id, changeInfo, tab) {
+        if (tab_id !== tabId) {  // ignore other tabs
+            return;
+        }
+        // remove listeners if the tab was closed and if user navigated away from archive
+        if (changeInfo.hasOwnProperty("isWindowClosing") || !re.test(tab.url)) {
+            chrome.tabs.onUpdated.removeListener(url_to_clipboard);
+            chrome.tabs.onRemoved.removeListener(url_to_clipboard);
+        } else
+            writeClipboard(tab.url);
+    }
+}
+
+function writeClipboard(text) {
+    let textarea = document.createElement("textarea");
+    textarea.textContent = text;
+    document.body.appendChild(textarea);
+    let range = document.createRange();
+    range.selectNode(textarea);
+    window.getSelection().addRange(range);
+    document.execCommand("copy");
+    window.getSelection().removeAllRanges();
+    document.body.removeChild(textarea);
 }
 
 function showArchive(url, bookmark) {

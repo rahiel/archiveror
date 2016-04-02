@@ -59,7 +59,7 @@ function archivePage() {
     tabs.open({
         url: "https://archive.is/?run=1&url=" +
             encodeURIComponent(tabs.activeTab.url),
-        onReady: function () {
+        onReady: function () {  // triggers for all new urls opened in this tab
             clipboard.set(tabs.activeTab.url);
         }});
 }

@@ -1,22 +1,24 @@
 # Archiveror
 
-Archiveror is a browser extension that will help you archive webpages by
-submitting them to <https://archive.is> (formerly <https://archive.today>). It
-will automatically archive every page you bookmark so you will always be able to
-revisit it on a later time as you first found it, whether or not the content has
-changed or even disappeared. If you revisit an already archived bookmark,
-Archiveror's icon will change and clicking on it will open the page on the
-archive. Previously bookmarked pages will be archived after you visit them again
-with Archiveror enabled.
+[![Build Status](https://travis-ci.org/rahiel/archiveror.svg?branch=master)](https://travis-ci.org/rahiel/archiveror)
+[![License](https://img.shields.io/badge/License-GPLv3+-blue.svg)](https://github.com/rahiel/archiveror/blob/master/LICENSE.txt)
 
-In addition you can also archive the current page by clicking the icon. This
-will put the archive link in your clipboard (Firefox only), ready to be pasted.
-There's also a hotkey for this, Alt+Y, which can be changed at the preferences.
+Archiveror is a browser extension that archives webpages by submitting them to
+<https://archive.is>. These archives are publicly available, so you then have a
+backup that you can refer to in case the original falls prey to
+[link rot](https://en.wikipedia.org/wiki/Link_rot).
+
+Archiveror will also protect your bookmarks by automatically archiving them in
+the background. Its icon will change when you visit a bookmark it has archived,
+clicking on it opens the page on the archive. Archiving of bookmarks happens
+when you make a new bookmark and when you open an old bookmark. This can be
+disabled.
+
+You can manually archive webpages by clicking on the icon or using the Alt+Y
+hotkey (configurable). The URL for the archive is then copied to your clipboard,
+so you can easily paste the link for references and citations.
 
 Happy archiving!
-
-*Privacy note*: this extension will necessarily send your bookmarks to
-<https://archive.is>.
 
 ## Local Saving
 (Currently for Chrome only)
@@ -42,11 +44,13 @@ extensions and enable it: <https://i.imgur.com/ahrfe3M.png>.
 
 ## Credits
 
-* Both the
-[floppy disk icon](https://openclipart.org/detail/211780/matt-icons_media-floppy-by-sixsixfive-211780)
-and the
-[star icon](https://openclipart.org/detail/212371/rodentia-icons_help-about-by-sixsixfive-212371)
-are by the artist [sixsixfive](https://sixsixfive.deviantart.com/) and were
-generously released into the public domain.
+* Both the [floppy disk icon](floppy) and the [star icon](star) are by the
+  artist [sixsixfive](https://sixsixfive.deviantart.com/) and were generously
+  released into the public domain.
 * This extension would not be possible without the free service provided by
-<https://archive.is>.
+  <https://archive.is>.
+* The essay [Archiving URLs](http://www.gwern.net/Archiving%20URLs) by Gwern
+  Branwen served as inspiration for this add-on.
+
+[floppy]: https://openclipart.org/detail/211780/matt-icons_media-floppy-by-sixsixfive-211780
+[star]: https://openclipart.org/detail/212371/rodentia-icons_help-about-by-sixsixfive-212371

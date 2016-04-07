@@ -27,7 +27,7 @@ to use for manual archiving at the options.
 
 - [**archive.is**](https://archive.is), launched in 2012.
 - [**archive.org**](https://archive.org/web/), launched in 2001. Respects
-  [robots.txt](robot) so it cannot archive all webpages.
+  [robots.txt][robot] so it cannot archive all webpages.
 
 [robot]: https://en.wikipedia.org/wiki/Robots_exclusion_standard
 
@@ -55,7 +55,7 @@ extensions and enable it: <https://i.imgur.com/ahrfe3M.png>.
 
 ## Credits
 
-* Both the [floppy disk icon](floppy) and the [star icon](star) are by the
+* Both the [floppy disk icon][floppy] and the [star icon][star] are by the
   artist [sixsixfive](https://sixsixfive.deviantart.com/) and were generously
   released into the public domain.
 * This extension would not be possible without the free service provided by

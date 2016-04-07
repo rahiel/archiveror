@@ -1,4 +1,3 @@
-const bookmarks = require("./bookmarks");
 const buttons = require('sdk/ui/button/action');
 const clipboard = require("sdk/clipboard");
 const Hotkey = require("sdk/hotkeys").Hotkey;
@@ -6,6 +5,9 @@ const preferences = require("sdk/simple-prefs");
 const Request = require("sdk/request").Request;
 const ss = require("sdk/simple-storage");
 const tabs = require('sdk/tabs');
+
+const bookmarks = require("./bookmarks");
+const { get_archiving_url } = require("./../utils.js");
 
 function archive(url) {
     // silently submit url to archive.is
@@ -56,9 +58,10 @@ let button = buttons.ActionButton({
 });
 
 function archivePage() {
+    let service = preferences.prefs.archiveService;
+
     tabs.open({
-        url: "https://archive.is/?run=1&url=" +
-            encodeURIComponent(tabs.activeTab.url),
+        url: get_archiving_url(tabs.activeTab.url, service),
         onReady: function () {  // triggers for all new urls opened in this tab
             clipboard.set(tabs.activeTab.url);
         }});

@@ -8,8 +8,25 @@
     "homepage": "https://github.com/rahiel/archiveror",
     "author": "Rahiel Kasim",
     "license": "GPL-3.0+ (https://github.com/rahiel/archiveror/blob/master/LICENSE.txt)",
-    "version": "0.2.6",
+    "version": "0.4.0",
     "preferences": [
+        {
+            "name": "archiveService",
+            "type": "radio",
+            "title": "Archiving Service",
+            "description": "The archiving service to use for manual archiving.",
+            "value": "archive.is",
+            "options": [
+                {
+                    "value": "archive.is",
+                    "label": "archive.is"
+                },
+                {
+                    "value": "archive.org",
+                    "label": "archive.org (Wayback Machine)"
+                }
+            ]
+        },
         {
             "name": "archiveKey",
             "title": "The hotkey to archive the current page with.",

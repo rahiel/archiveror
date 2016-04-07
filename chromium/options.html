@@ -8,8 +8,19 @@
   </style>
 </head>
 <body>
-  <h3>Archiving mode</h3>
+  <h3>Archiving Service</h3>
+  <p>The online archiving service to use for manual archiving.</p>
+  <label for="archive.is">
+    <input type="radio" name="service" id="archive.is" value="archive.is">
+    <a href="https://archive.is/">archive.is</a>
+  </label>
+  <br>
+  <label for="archive.org">
+    <input type="radio" name="service" id="archive.org" value="archive.org">
+    <a href="https://archive.org/web/">archive.org</a> (Wayback Machine)
+  </label>
 
+  <h3>Archiving mode</h3>
   <label for="online">
     <input type="radio" name="mode" id="online" value="online">Online (archive.is)
   </label>

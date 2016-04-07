@@ -4,9 +4,9 @@
 [![License](https://img.shields.io/badge/License-GPLv3+-blue.svg)](https://github.com/rahiel/archiveror/blob/master/LICENSE.txt)
 
 Archiveror is a browser extension that archives webpages by submitting them to
-<https://archive.is>. These archives are publicly available, so you then have a
-backup that you can refer to in case the original falls prey to
-[link rot](https://en.wikipedia.org/wiki/Link_rot).
+<https://archive.is> or <https://archive.org>. These archives are publicly
+available, so you then have a backup that you can refer to in case the original
+falls prey to [link rot](https://en.wikipedia.org/wiki/Link_rot).
 
 Archiveror will also protect your bookmarks by automatically archiving them in
 the background. Its icon will change when you visit a bookmark it has archived,
@@ -19,6 +19,17 @@ hotkey (configurable). The URL for the archive is then copied to your clipboard,
 so you can easily paste the link for references and citations.
 
 Happy archiving!
+
+## Archiving Services
+
+Archiveror supports several online archiving service. You can change which one
+to use for manual archiving at the options.
+
+- [**archive.is**](https://archive.is), launched in 2012.
+- [**archive.org**](https://archive.org/web/), launched in 2001. Respects
+  [robots.txt](robot) so it cannot archive all webpages.
+
+[robot]: https://en.wikipedia.org/wiki/Robots_exclusion_standard
 
 ## Local Saving
 (Currently for Chrome only)

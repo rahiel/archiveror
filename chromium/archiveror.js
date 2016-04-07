@@ -1,3 +1,5 @@
+import { get_archiving_url } from "./../utils.js";
+
 function archive_is(url) {
     let request = new XMLHttpRequest();
     request.open("POST", "https://archive.is/submit/", true);
@@ -21,12 +23,16 @@ function postArchive(url, link) {
 }
 
 function archivePage(url) {
-    let tabId, link = "https://archive.is/?run=1&url=" + encodeURIComponent(url);
-    chrome.tabs.create({url: link}, function (tab) {
-        tabId = tab.id;
-        // support updating clipboard with new link from archive.is "save the page again"
-        chrome.tabs.onUpdated.addListener(url_to_clipboard);
-        chrome.tabs.onRemoved.addListener(url_to_clipboard);
+    let tabId, link;
+    chrome.storage.local.get({archiveService: "archive.is"}, function (items) {
+        link = get_archiving_url(url, items.archiveService);
+
+        chrome.tabs.create({url: link}, function (tab) {
+            tabId = tab.id;
+            // support updating clipboard with new link from archive.is "save the page again"
+            chrome.tabs.onUpdated.addListener(url_to_clipboard);
+            chrome.tabs.onRemoved.addListener(url_to_clipboard);
+        });
     });
 
     let re = /https?\:\/\/(www)?archive\.is.*/;

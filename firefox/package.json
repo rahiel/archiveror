@@ -24,6 +24,10 @@
                 {
                     "value": "archive.org",
                     "label": "archive.org (Wayback Machine)"
+                },
+                {
+                    "value": "webcitation.org",
+                    "label": "webcitation.org (requires email, no HTTPS)"
                 }
             ]
         },
@@ -40,6 +44,13 @@
             "description": "Enable to automatically archive bookmarks.",
             "type": "bool",
             "value": true
+        },
+        {
+            "name": "email",
+            "title": "Email address",
+            "description": "The email address used for archiving on webcitation.org. You will receive a link to the archive by email.",
+            "type": "string",
+            "value": ""
         }
     ],
     "permissions": {"private-browsing": true}

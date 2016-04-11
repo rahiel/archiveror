@@ -19,10 +19,15 @@
     <input type="radio" name="service" id="archive.org" value="archive.org">
     <a href="https://archive.org/web/">archive.org</a> (Wayback Machine)
   </label>
+  <br>
+  <label for="webcitation.org">
+    <input type="radio" name="service" id="webcitation.org" value="webcitation.org">
+    <a href="http://webcitation.org/">webcitation.org</a> (requires email, no HTTPS)
+  </label>
 
   <h3>Archiving mode</h3>
   <label for="online">
-    <input type="radio" name="mode" id="online" value="online">Online (archive.is)
+    <input type="radio" name="mode" id="online" value="online">Online
   </label>
   <br>
   <label for="local">
@@ -41,6 +46,17 @@
     </table>
     The location of your Downloads folder can be changed at the advanced settings.
     (<a href="https://support.google.com/chrome/answer/95574">instructions</a>)
+  </div>
+
+  <div id="email_option">
+    <h3>Email Address</h3>
+    The email address used for archiving on webcitation.org. You will receive a link to the archive by email.
+    <table>
+      <tr>
+        <td><label for="email">Email:</label></td>
+        <td><input type="text" id="email"></td>
+      </tr>
+    </table>
   </div>
 
   <div style="margin-bottom: 10px">

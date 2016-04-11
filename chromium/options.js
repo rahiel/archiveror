@@ -19,10 +19,12 @@ function save_options() {
 
     let dir = document.getElementById("dir").value;
     // TODO: check dir for forbidden characters
+    let email = document.getElementById("email").value;
     let bookmarks = document.getElementById("bookmarks").checked;
 
     chrome.storage.local.set({
-        archiveMode: mode, archiveDir: dir, archiveBookmarks: bookmarks, archiveService: service
+        archiveMode: mode, archiveDir: dir, archiveBookmarks: bookmarks, archiveService: service,
+        email: email
     }, function () {
         message("Options saved.");
     });
@@ -30,7 +32,8 @@ function save_options() {
 
 function restore_options() {
     chrome.storage.local.get({  // below are the default values
-        archiveMode: "online", archiveDir: "Archiveror", archiveBookmarks: true, archiveService: "archive.is"
+        archiveMode: "online", archiveDir: "Archiveror", archiveBookmarks: true, archiveService: "archive.is",
+        email: ""
     }, set_options);
 
     function set_options(items) {
@@ -39,11 +42,8 @@ function restore_options() {
         }
 
         document.getElementById("dir").value = items.archiveDir;
-
-        if (items.archiveService === "archive.is")
-            document.getElementById("archive.is").checked = true;
-        else if (items.archiveService === "archive.org")
-            document.getElementById("archive.org").checked = true;
+        document.getElementById("email").value = items.email;
+        document.getElementById(items.archiveService).checked = true;
 
         if (items.archiveMode === "online")
             document.getElementById("online").checked = true;

@@ -24,8 +24,8 @@ function postArchive(url, link) {
 
 function archivePage(url) {
     let tabId, link;
-    chrome.storage.local.get({archiveService: "archive.is"}, function (items) {
-        link = get_archiving_url(url, items.archiveService);
+    chrome.storage.local.get({archiveService: "archive.is", email: ""}, function (items) {
+        link = get_archiving_url(url, items.archiveService, items.email);
 
         chrome.tabs.create({url: link}, function (tab) {
             tabId = tab.id;
@@ -35,7 +35,7 @@ function archivePage(url) {
         });
     });
 
-    let re = /https?\:\/\/(www)?archive\.is.*/;
+    let re = /.*(?:archive|webcitation)\.(?:is|org).*/;
     function url_to_clipboard(tab_id, changeInfo, tab) {
         if (tab_id !== tabId) {  // ignore other tabs
             return;

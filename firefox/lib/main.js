@@ -59,9 +59,10 @@ let button = buttons.ActionButton({
 
 function archivePage() {
     let service = preferences.prefs.archiveService;
+    let email = preferences.prefs.email;
 
     tabs.open({
-        url: get_archiving_url(tabs.activeTab.url, service),
+        url: get_archiving_url(tabs.activeTab.url, service, email),
         onReady: function () {  // triggers for all new urls opened in this tab
             clipboard.set(tabs.activeTab.url);
         }});

@@ -4,9 +4,10 @@
 [![License](https://img.shields.io/badge/License-GPLv3+-blue.svg)](https://github.com/rahiel/archiveror/blob/master/LICENSE.txt)
 
 Archiveror is a browser extension that archives webpages by submitting them to
-<https://archive.is> or <https://archive.org>. These archives are publicly
-available, so you then have a backup that you can refer to in case the original
-falls prey to [link rot](https://en.wikipedia.org/wiki/Link_rot).
+<https://archive.is>, <https://archive.org> and other archiving services. These
+archives are publicly available, so you then have a backup that you can refer to
+in case the original falls prey to
+[link rot](https://en.wikipedia.org/wiki/Link_rot).
 
 Archiveror will also protect your bookmarks by automatically archiving them in
 the background. Its icon will change when you visit a bookmark it has archived,
@@ -14,9 +15,9 @@ clicking on it opens the page on the archive. Archiving of bookmarks happens
 when you make a new bookmark and when you open an old bookmark. This can be
 disabled.
 
-You can manually archive webpages by clicking on the icon or using the Alt+Y
-hotkey (configurable). The URL for the archive is then copied to your clipboard,
-so you can easily paste the link for references and citations.
+You can manually archive webpages by clicking on the icon or using the
+Alt+Shift+Y hotkey (configurable). The URL for the archive is then copied to
+your clipboard, so you can easily paste the link for references and citations.
 
 Happy archiving!
 
@@ -25,9 +26,15 @@ Happy archiving!
 Archiveror supports several online archiving service. You can change which one
 to use for manual archiving at the options.
 
-- [**archive.is**](https://archive.is), launched in 2012.
+- [**archive.is**](https://archive.is), launched in 2012. Blocks (some)
+  advertising and (user tracking) JavaScript.
+  [Example](https://archive.is/N0yex)
 - [**archive.org**](https://archive.org/web/), launched in 2001. Respects
   [robots.txt][robot] so it cannot archive all webpages.
+  [Example](https://web.archive.org/web/20160420095454/http://physics.weber.edu/schroeder/md/)
+- [**webcitation.org**](http://www.webcitation.org), launched in 1997, respects
+  robots.txt. You need to set an email address at the options to use it. Has a
+  focus on academic users. [Example](http://www.webcitation.org/6guJcxnyr)
 
 [robot]: https://en.wikipedia.org/wiki/Robots_exclusion_standard
 
@@ -58,8 +65,9 @@ extensions and enable it: <https://i.imgur.com/ahrfe3M.png>.
 * Both the [floppy disk icon][floppy] and the [star icon][star] are by the
   artist [sixsixfive](https://sixsixfive.deviantart.com/) and were generously
   released into the public domain.
-* This extension would not be possible without the free service provided by
-  <https://archive.is>.
+* This extension would not be possible without the free archiving services
+  provided by <https://archive.is>, <https://archive.org> and
+  <http://www.webcitation.org>.
 * The essay [Archiving URLs](http://www.gwern.net/Archiving%20URLs) by Gwern
   Branwen served as inspiration for this add-on.
 

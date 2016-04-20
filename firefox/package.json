@@ -8,7 +8,7 @@
     "homepage": "https://github.com/rahiel/archiveror",
     "author": "Rahiel Kasim",
     "license": "GPL-3.0+ (https://github.com/rahiel/archiveror/blob/master/LICENSE.txt)",
-    "version": "0.4.0",
+    "version": "0.4.1",
     "preferences": [
         {
             "name": "archiveService",
@@ -36,7 +36,7 @@
             "title": "The hotkey to archive the current page with.",
             "description": "Archive the current page. The archive url will be in your clipboard.",
             "type": "string",
-            "value": "alt-Y"
+            "value": "alt-shift-Y"
         },
         {
             "name": "archiveBookmarks",

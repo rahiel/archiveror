@@ -1,8 +1,8 @@
 {
     "name": "Archiveror",
     "author": "Rahiel Kasim",
-    "description": "Archive webpages on archive.is/archive.org or on your own computer in MHTML format. Automatically archive your bookmarks.",
-    "version": "0.4.0",
+    "description": "Archive webpages on archive.is, archive.org and more or on your own computer in MHTML format. Automatically archive your bookmarks.",
+    "version": "0.4.1",
 
     "icons": { "16": "icon-16.png",
                "48": "icon-48.png",
@@ -40,8 +40,8 @@
 
     "commands": {
         "archive-page": {
-            "suggested_key": {"default": "Alt+Y"},
-            "description": "Submit current page to archive.is"
+            "suggested_key": {"default": "Alt+Shift+Y"},
+            "description": "Archive current page online"
         },
         "save-local": {
             "suggested_key": {"default": "Ctrl+Shift+S"},

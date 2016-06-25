@@ -1,5 +1,6 @@
 const buttons = require('sdk/ui/button/action');
 const clipboard = require("sdk/clipboard");
+const cm = require("sdk/context-menu");
 const Hotkey = require("sdk/hotkeys").Hotkey;
 const preferences = require("sdk/simple-prefs");
 const Request = require("sdk/request").Request;
@@ -7,7 +8,8 @@ const ss = require("sdk/simple-storage");
 const tabs = require('sdk/tabs');
 
 const bookmarks = require("./bookmarks");
-const { get_archiving_url } = require("./../utils.js");
+const { get_archiving_url, services } = require("./../utils.js");
+
 
 function archive(url) {
     // silently submit url to archive.is
@@ -57,8 +59,9 @@ let button = buttons.ActionButton({
     }
 });
 
-function archivePage() {
-    let service = preferences.prefs.archiveService;
+function archivePage(service) {
+    if (service === undefined)
+        service = preferences.prefs.archiveService;
     let email = preferences.prefs.email;
 
     tabs.open({
@@ -106,6 +109,26 @@ function autoArchive(url) {
         archive(url);
     }
 }
+
+// right-click context menu
+let menuItems = [];
+for (let i = 0; i < services.length; i++) {
+    menuItems.push(cm.Item({
+        label: services[i],
+        data: services[i]
+    }));
+}
+let archiveContextMenu = cm.Menu({
+    label: "Archive",
+    context: cm.PageContext(),
+    contentScript: `self.on("click", function (node, data) {
+                        self.postMessage(data);
+                    })`,
+    onMessage: function (service) {
+        archivePage(service);
+    },
+    items: menuItems
+});
 
 exports.main = function () {
     // archive newly made bookmarks

@@ -1,5 +1,7 @@
 // code shared between the extensions
 
+export const services = ["archive.is", "archive.org", "webcitation.org"];
+
 export function get_archiving_url(page, service, email) {
     let url = "https://archive.is/?run=1&url=" + page; // default
     if (service === "archive.org")
@@ -11,4 +13,8 @@ export function get_archiving_url(page, service, email) {
     return url;
 }
 
-exports.get_archiving_url = get_archiving_url;
+// exports for firefox
+exports = {
+    get_archiving_url: get_archiving_url,
+    services: services
+};

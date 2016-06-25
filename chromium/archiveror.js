@@ -1,4 +1,5 @@
-import { get_archiving_url } from "./../utils.js";
+import { get_archiving_url, services } from "./../utils.js";
+
 
 function archive_is(url) {
     let request = new XMLHttpRequest();
@@ -22,10 +23,12 @@ function postArchive(url, link) {
     });
 }
 
-function archivePage(url) {
+function archivePage(url, service) {
     let tabId, link;
     chrome.storage.local.get({archiveService: "archive.is", email: ""}, function (items) {
-        link = get_archiving_url(url, items.archiveService, items.email);
+        if (service === undefined)
+            service = items.archiveService;
+        link = get_archiving_url(url, service, items.email);
 
         chrome.tabs.create({url: link}, function (tab) {
             tabId = tab.id;
@@ -240,6 +243,22 @@ chrome.commands.onCommand.addListener(function (command) {
     if (typeof action !== "undefined") {
         chrome.tabs.query({active: true, lastFocusedWindow: true}, action);
     }
+});
+
+// context menu
+let menu = chrome.contextMenus.create({
+    title: "Archive",
+    id: "context-menu"
+});
+for (let service of services) {
+    chrome.contextMenus.create({
+        title: service,
+        id: service,
+        parentId: menu
+    });
+}
+chrome.contextMenus.onClicked.addListener(function (info, tab) {
+    archivePage(info.pageUrl, info.menuItemId);
 });
 
 function newBookmark(id, bookmark) {

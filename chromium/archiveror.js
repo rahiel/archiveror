@@ -29,6 +29,8 @@ function archivePage(url, service) {
         if (service === undefined)
             service = items.archiveService;
         link = get_archiving_url(url, service, items.email);
+        if (link === null)
+            return;   // don't archive internal pages, "file://", "chrome://", etc.
 
         chrome.tabs.create({url: link}, function (tab) {
             tabId = tab.id;

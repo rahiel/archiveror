@@ -63,9 +63,12 @@ function archivePage(service) {
     if (service === undefined)
         service = preferences.prefs.archiveService;
     let email = preferences.prefs.email;
+    let url = get_archiving_url(tabs.activeTab.url, service, email);
+    if (url === null)
+        return;            // internal page, "file://" or "about:" etc.
 
     tabs.open({
-        url: get_archiving_url(tabs.activeTab.url, service, email),
+        url: url,
         onReady: function () {  // triggers for all new urls opened in this tab
             clipboard.set(tabs.activeTab.url);
         }});

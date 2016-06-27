@@ -1,7 +1,9 @@
-import { get_archiving_url, services } from "./../utils.js";
+import { get_archiving_url, is_local, services } from "./../utils.js";
 
 
 function archive_is(url) {
+    if (is_local(url))
+        return;
     let request = new XMLHttpRequest();
     request.open("POST", "https://archive.is/submit/", true);
     request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -23,14 +25,15 @@ function postArchive(url, link) {
     });
 }
 
+// archive url online at service
 function archivePage(url, service) {
+    if (is_local(url))
+        return;   // don't archive internal pages, "file://", "chrome://", etc.
     let tabId, link;
     chrome.storage.local.get({archiveService: "archive.is", email: ""}, function (items) {
         if (service === undefined)
             service = items.archiveService;
         link = get_archiving_url(url, service, items.email);
-        if (link === null)
-            return;   // don't archive internal pages, "file://", "chrome://", etc.
 
         chrome.tabs.create({url: link}, function (tab) {
             tabId = tab.id;
@@ -259,8 +262,13 @@ for (let service of services) {
         parentId: menu
     });
 }
+chrome.contextMenus.create({type: "separator", id: "separator", parentId: menu});
+chrome.contextMenus.create({title: "Save MHTML as...", id: "MHTML", parentId: menu});
 chrome.contextMenus.onClicked.addListener(function (info, tab) {
-    archivePage(info.pageUrl, info.menuItemId);
+    if (info.menuItemId === "MHTML")
+        saveLocal(tab, false);
+    else
+        archivePage(info.pageUrl, info.menuItemId);
 });
 
 function newBookmark(id, bookmark) {

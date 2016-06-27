@@ -4,11 +4,15 @@ export const services = ["archive.is", "archive.org", "webcitation.org"];
 
 const exclude = ["file://", "about:", "chrome://"];
 
-export function get_archiving_url(page, service, email) {
+export function is_local(url) {
     for (let i = 0; i < exclude.length; i++) {
-        if (page.startsWith(exclude[i]))
-            return null;
+        if (url.startsWith(exclude[i]))
+            return true;
     }
+    return false;
+}
+
+export function get_archiving_url(page, service, email) {
     let url = "https://archive.is/?run=1&url=" + page; // default
     if (service === "archive.org")
         url = "https://web.archive.org/save/" + page;

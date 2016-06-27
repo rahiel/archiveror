@@ -8,11 +8,13 @@ const ss = require("sdk/simple-storage");
 const tabs = require('sdk/tabs');
 
 const bookmarks = require("./bookmarks");
-const { get_archiving_url, services } = require("./../utils.js");
+const { get_archiving_url, is_local, services } = require("./../utils.js");
 
 
 function archive(url) {
     // silently submit url to archive.is
+    if (is_local(url))
+        return;
     const r = Request({
         url: "https://archive.is/submit/",
         content: {"url": url, "anyway": 1},
@@ -60,12 +62,12 @@ let button = buttons.ActionButton({
 });
 
 function archivePage(service) {
+    if (is_local(tabs.activeTab.url))
+        return;            // internal page, "file://" or "about:" etc.
     if (service === undefined)
         service = preferences.prefs.archiveService;
     let email = preferences.prefs.email;
     let url = get_archiving_url(tabs.activeTab.url, service, email);
-    if (url === null)
-        return;            // internal page, "file://" or "about:" etc.
 
     tabs.open({
         url: url,

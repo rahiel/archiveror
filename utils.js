@@ -13,12 +13,13 @@ export function is_local(url) {
 }
 
 export function get_archiving_url(page, service, email) {
-    let url = "https://archive.is/?run=1&url=" + page; // default
+    let url = "https://archive.is/?run=1&url=" + encodeURIComponent(page); // default
     if (service === "archive.org")
+        // breaks if page is URI encoded
         url = "https://web.archive.org/save/" + page;
     else if (service === "webcitation.org") {
         let base = "http://www.webcitation.org/archive?url=";
-        url = base + encodeURIComponent(page) + "&email=" + email;
+        url = base + encodeURIComponent(page) + "&email=" + encodeURIComponent(email);
     }
     return url;
 }

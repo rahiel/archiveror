@@ -8,7 +8,7 @@
     "homepage": "https://github.com/rahiel/archiveror",
     "author": "Rahiel Kasim",
     "license": "GPL-3.0+ (https://github.com/rahiel/archiveror/blob/master/LICENSE.txt)",
-    "version": "0.5.2",
+    "version": "0.5.3",
     "preferences": [
         {
             "name": "archiveService",

@@ -2,11 +2,11 @@
 
 export const services = ["archive.is", "archive.org", "webcitation.org"];
 
-const exclude = ["file://", "about:", "chrome://"];
+const blacklist = ["file://", "about:", "chrome://", "http://127.0.0.1", "http://localhost"];
 
 export function is_local(url) {
-    for (let i = 0; i < exclude.length; i++) {
-        if (url.startsWith(exclude[i]))
+    for (let b of blacklist) {
+        if (url.startsWith(b))
             return true;
     }
     return false;

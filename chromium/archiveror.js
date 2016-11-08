@@ -25,22 +25,24 @@ function postArchive(url, link) {
     });
 }
 
-// archive url online at service
-function archivePage(url, service) {
+// archive url online at services (a list of strings)
+function archivePage(url, services) {
     if (is_local(url))
         return;   // don't archive internal pages, "file://", "chrome://", etc.
     let tabId, link;
-    chrome.storage.local.get({archiveService: "archive.is", email: ""}, function (items) {
-        if (service === undefined)
-            service = items.archiveService;
-        link = get_archiving_url(url, service, items.email);
+    chrome.storage.local.get({archiveServices: ["archive.is"], email: ""}, function (items) {
+        if (services === undefined)
+            services = items.archiveServices;
+        for (let service of services) {
+            link = get_archiving_url(url, service, items.email);
 
-        chrome.tabs.create({url: link}, function (tab) {
-            tabId = tab.id;
-            // support updating clipboard with new link from archive.is "save the page again"
-            chrome.tabs.onUpdated.addListener(url_to_clipboard);
-            chrome.tabs.onRemoved.addListener(url_to_clipboard);
-        });
+            chrome.tabs.create({url: link}, function (tab) {
+                tabId = tab.id;
+                // support updating clipboard with new link from archive.is "save the page again"
+                chrome.tabs.onUpdated.addListener(url_to_clipboard);
+                chrome.tabs.onRemoved.addListener(url_to_clipboard);
+            });
+        }
     });
 
     let re = /.*(?:archive|webcitation)\.(?:is|org).*/;
@@ -268,7 +270,7 @@ chrome.contextMenus.onClicked.addListener(function (info, tab) {
     if (info.menuItemId === "MHTML")
         saveLocal(tab, false);
     else
-        archivePage(info.pageUrl, info.menuItemId);
+        archivePage(info.pageUrl, [info.menuItemId]);
 });
 
 function newBookmark(id, bookmark) {
@@ -418,3 +420,13 @@ function removeBookmark(id, removeInfo) {
     }
 }
 chrome.bookmarks.onRemoved.addListener(removeBookmark);
+
+// TODO: preference migration, remove this somewhere 2017
+chrome.storage.local.get({archiveService: null}, function (items) {
+    let service = items.archiveService;
+    if (typeof service === "string") {
+        chrome.storage.local.set({archiveServices: [service]}, function () {
+            chrome.storage.local.remove("archiveService");
+        });
+    }
+});

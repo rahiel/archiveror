@@ -12,8 +12,7 @@ module.exports = {
             {
                 loader: "babel-loader",
                 test: /\.js$/,
-                exclude: /node_modules/,
-                query: { presets: ["es2015-native-modules"] }
+                exclude: /node_modules/
             },
             { test: /\.css$/, loader: "style!css" }
         ]

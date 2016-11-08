@@ -1,21 +1,19 @@
 function save_options() {
 
-    function get_radio_option(name) {
-        // get the selected radio option by name
-        let radio = document.getElementsByName(name);
-        let option = "None";
-        for (let i = 0; i < radio.length; i++) {
-            if (radio[i].checked === true) {
-                option = radio[i].value;
-                break;
+    function get_options(name) {
+        // get the selected options by name
+        let checkboxes = document.getElementsByName(name);
+        let options = [];
+        for (let c of checkboxes) {
+            if (c.checked === true) {
+                options.push(c.value);
             }
         }
-        if (option === "None")
-            message("Please select a mode.");  // this should never happen
-        return option;
+        return options;
     }
-    let mode = get_radio_option("mode");
-    let service = get_radio_option("service");
+
+    let mode = get_options("mode")[0];
+    let services = get_options("service");
 
     let dir = document.getElementById("dir").value;
     // TODO: check dir for forbidden characters
@@ -23,7 +21,7 @@ function save_options() {
     let bookmarks = document.getElementById("bookmarks").checked;
 
     chrome.storage.local.set({
-        archiveMode: mode, archiveDir: dir, archiveBookmarks: bookmarks, archiveService: service,
+        archiveMode: mode, archiveDir: dir, archiveBookmarks: bookmarks, archiveServices: services,
         email: email
     }, function () {
         message("Options saved.");
@@ -32,7 +30,7 @@ function save_options() {
 
 function restore_options() {
     chrome.storage.local.get({  // below are the default values
-        archiveMode: "online", archiveDir: "Archiveror", archiveBookmarks: true, archiveService: "archive.is",
+        archiveMode: "online", archiveDir: "Archiveror", archiveBookmarks: true, archiveServices: ["archive.is"],
         email: ""
     }, set_options);
 
@@ -43,7 +41,9 @@ function restore_options() {
 
         document.getElementById("dir").value = items.archiveDir;
         document.getElementById("email").value = items.email;
-        document.getElementById(items.archiveService).checked = true;
+        for (let s of items.archiveServices) {
+            document.getElementById(s).checked = true;
+        }
 
         if (items.archiveMode === "online")
             document.getElementById("online").checked = true;

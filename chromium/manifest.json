@@ -2,7 +2,7 @@
     "name": "Archiveror",
     "author": "Rahiel Kasim",
     "description": "Archive webpages on archive.is, archive.org and more or on your own computer in MHTML format. Automatically archive your bookmarks.",
-    "version": "0.5.3",
+    "version": "0.6.0",
 
     "icons": {
         "16": "icon-16.png",
@@ -14,7 +14,6 @@
         "tabs",
         "bookmarks",
         "storage",
-        "https://archive.is/",
         "downloads",
         "downloads.shelf",
         "pageCapture",

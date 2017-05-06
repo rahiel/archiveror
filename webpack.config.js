@@ -1,12 +1,14 @@
+/* global __dirname */
 module.exports = {
     entry: {
         "dist-chromium/archiveror": "./chromium/archiveror.js",
         "dist-chromium/options": "./chromium/options.js"
     },
     output: {
-        path: "./",
+        path: __dirname + "/",
         filename: "[name].js"
     },
+    devtool: "source-map",
     module: {
         loaders: [
             {

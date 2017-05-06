@@ -1,11 +1,11 @@
-const buttons = require('sdk/ui/button/action');
+const buttons = require("sdk/ui/button/action");
 const clipboard = require("sdk/clipboard");
 const cm = require("sdk/context-menu");
 const Hotkey = require("sdk/hotkeys").Hotkey;
 const preferences = require("sdk/simple-prefs");
 const Request = require("sdk/request").Request;
 const ss = require("sdk/simple-storage");
-const tabs = require('sdk/tabs');
+const tabs = require("sdk/tabs");
 
 const bookmarks = require("./bookmarks");
 const { get_archiving_url, is_local, services } = require("./../utils.js");
@@ -37,17 +37,23 @@ if (!ss.storage.data)
 let data = ss.storage.data;
 
 
-const defaultButton = {label: "Archive Page",
-                       icon: {"16": "./icon-16.png",
-                              "32": "./icon-32.png",
-                              "64": "./icon-64.png"}
-                      };
+const defaultButton = {
+    label: "Archive Page",
+    icon: {
+        "16": "./icon-16.png",
+        "32": "./icon-32.png",
+        "64": "./icon-64.png"
+    }
+};
 
-const showButton = {label: "Go to archived page",
-                    icon: {"16": "./icon-16-star.png",
-                           "32": "./icon-32-star.png",
-                           "64": "./icon-64-star.png"}
-                   };
+const showButton = {
+    label: "Go to archived page",
+    icon: {
+        "16": "./icon-16-star.png",
+        "32": "./icon-32-star.png",
+        "64": "./icon-64-star.png"
+    }
+};
 
 let button = buttons.ActionButton({
     id: "archive-button",

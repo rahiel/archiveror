@@ -75,7 +75,7 @@ function showArchive(url, bookmark) {
     // Notify user if we have an archive of the current page
     chrome.storage.local.get({archiveMode: "online", archiveBookmarks: true}, function (items) {
         if (items.archiveMode === "local")
-            showBadge('_' + url, items.archiveBookmarks);
+            showBadge("_" + url, items.archiveBookmarks);
         else
             showBadge(url, items.archiveBookmarks);
     });
@@ -83,7 +83,7 @@ function showArchive(url, bookmark) {
     function showBadge(url, archiveBookmarks) {
         chrome.storage.local.get(url, function (data) {
             if (data[url]) {
-                let taburl = normalURL(url).split('#')[0];
+                let taburl = normalURL(url).split("#")[0];
                 chrome.tabs.query({"url": taburl}, function (tabs) {
                     changeBadge(tabs, buttonTitle.present, "!", "#FFB90F");
                 });
@@ -94,7 +94,7 @@ function showArchive(url, bookmark) {
     }
 
     function normalURL(url) {
-        if (url[0] === '_')
+        if (url[0] === "_")
             return url.slice(1);
         else
             return url;
@@ -118,8 +118,8 @@ function archiveClick(tab) {
         if (text === buttonTitle.present) {
             chrome.storage.local.get({archiveMode: "online"}, function (items) {
                 if (items.archiveMode === "local") {
-                    chrome.storage.local.get('_' + tab.url, function (data) {
-                        let url = data['_' + tab.url].filename;
+                    chrome.storage.local.get("_" + tab.url, function (data) {
+                        let url = data["_" + tab.url].filename;
                         chrome.tabs.create({"url": "file://" + url});
                     });
                 } else {
@@ -147,7 +147,7 @@ function archive(url, save, tab, bookmark) {
         } else {
             if (typeof tab === "undefined") {  // for bookmark visit / creation
                 // tabs.query doesn't match fragment identifiers
-                url = url.split('#')[0];
+                url = url.split("#")[0];
                 chrome.tabs.query({"url": url}, function (tabs) {
                     downloadBlock.push(tabs[0].id);
                     getPath(bookmark, function (path) {
@@ -164,8 +164,8 @@ function silentDownload(url, filename, path, callback) {
     // silently download to archiveDir
     chrome.storage.local.get({archiveDir: "Archiveror"}, function (items) {
         filename = items.archiveDir + path + filename;
-        chrome.downloads.download({url: url, filename: filename, saveAs: false,
-                                   conflictAction: "overwrite"}, callback);
+        chrome.downloads.download({
+            url: url, filename: filename, saveAs: false, conflictAction: "overwrite"}, callback);
     });
 }
 
@@ -294,7 +294,7 @@ function getPath(bookmark, callback) {
             if (node.parentId)
                 getParent(node);
             else
-                callback(nodes.reverse().join('/') + '/');
+                callback(nodes.reverse().join("/") + "/");
         });
     }
 }
@@ -327,7 +327,7 @@ function moveLocal(id, moveInfo) {
     function moveBookmark(bookmarks) {
         let bookmark = bookmarks[0];
         if (bookmark.hasOwnProperty("url")) {
-            let key = '_' + bookmark.url;
+            let key = "_" + bookmark.url;
             chrome.storage.local.get(key, function (items) {
                 let data = items[key];
                 // check if we need to move anything
@@ -405,7 +405,7 @@ function removeBookmark(id, removeInfo) {
         getBookmarkTree();
         let url = bookmark.url;
 
-        let key = '_' + url;
+        let key = "_" + url;
         chrome.storage.local.get(key, function (items) {
             // What if deleting the file fails?
             chrome.downloads.removeFile(items[key].id);
@@ -420,13 +420,3 @@ function removeBookmark(id, removeInfo) {
     }
 }
 chrome.bookmarks.onRemoved.addListener(removeBookmark);
-
-// TODO: preference migration, remove this somewhere 2017
-chrome.storage.local.get({archiveService: null}, function (items) {
-    let service = items.archiveService;
-    if (typeof service === "string") {
-        chrome.storage.local.set({archiveServices: [service]}, function () {
-            chrome.storage.local.remove("archiveService");
-        });
-    }
-});

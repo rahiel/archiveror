@@ -1,4 +1,4 @@
-import { get_archiving_url, is_local, services } from "./../utils.js";
+import { get_archiving_url, is_local, services, hasPageCapture } from "./utils.js";
 
 
 function archive_is(url) {
@@ -264,8 +264,10 @@ for (let service of services) {
         parentId: menu
     });
 }
-chrome.contextMenus.create({type: "separator", id: "separator", parentId: menu});
-chrome.contextMenus.create({title: "Save MHTML as...", id: "MHTML", parentId: menu});
+if (hasPageCapture) {
+    chrome.contextMenus.create({type: "separator", id: "separator", parentId: menu});
+    chrome.contextMenus.create({title: "Save MHTML as...", id: "MHTML", parentId: menu});
+}
 chrome.contextMenus.onClicked.addListener(function (info, tab) {
     if (info.menuItemId === "MHTML")
         saveLocal(tab, false);

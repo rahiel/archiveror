@@ -1,5 +1,3 @@
-// code shared between the extensions
-
 export const services = ["archive.is", "archive.org", "webcitation.org"];
 
 const blacklist = ["file://", "about:", "chrome://", "http://127.0.0.1", "http://localhost"];
@@ -24,8 +22,9 @@ export function get_archiving_url(page, service, email) {
     return url;
 }
 
-// exports for firefox
-exports = {
-    get_archiving_url: get_archiving_url,
-    services: services
-};
+export let hasPageCapture;
+if (chrome.hasOwnProperty("pageCapture")) {
+    hasPageCapture = true;
+} else {
+    hasPageCapture = false;
+}

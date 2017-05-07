@@ -1,3 +1,5 @@
+import { hasPageCapture } from "./utils.js";
+
 function save_options() {
 
     function get_options(name) {
@@ -72,4 +74,9 @@ function message(text) {
     window.setTimeout(function () {
         status.textContent = "";
     }, 3000);
+}
+
+if (!hasPageCapture) {
+    let div = document.getElementById("archivingMode");
+    div.style.display = "none";
 }

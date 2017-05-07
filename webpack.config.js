@@ -1,8 +1,8 @@
 /* global __dirname */
 module.exports = {
     entry: {
-        "dist-chromium/archiveror": "./chromium/archiveror.js",
-        "dist-chromium/options": "./chromium/options.js"
+        "dist/archiveror": "./src/archiveror.js",
+        "dist/options": "./src/options.js"
     },
     output: {
         path: __dirname + "/",

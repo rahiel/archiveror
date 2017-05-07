@@ -62,8 +62,8 @@ extensions and enable it: <https://i.imgur.com/ahrfe3M.png>.
 
 ## Credits
 
-* Both the [floppy disk icon][floppy] and the [star icon][star] are by the
-  artist [sixsixfive](https://sixsixfive.deviantart.com/) and were generously
+* The [floppy disk icon][floppy] is by the
+  artist [sixsixfive](https://sixsixfive.deviantart.com/) and was generously
   released into the public domain.
 * This extension would not be possible without the free archiving services
   provided by <https://archive.is>, <https://archive.org> and
@@ -72,4 +72,3 @@ extensions and enable it: <https://i.imgur.com/ahrfe3M.png>.
   Branwen served as inspiration for this add-on.
 
 [floppy]: https://openclipart.org/detail/211780/matt-icons_media-floppy-by-sixsixfive-211780
-[star]: https://openclipart.org/detail/212371/rodentia-icons_help-about-by-sixsixfive-212371

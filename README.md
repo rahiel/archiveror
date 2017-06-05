@@ -9,22 +9,24 @@ archives are publicly available, so you then have a backup that you can refer to
 in case the original falls prey to
 [link rot](https://en.wikipedia.org/wiki/Link_rot).
 
-Archiveror will also protect your bookmarks by automatically archiving them in
+Archiveror will also preserve your bookmarks by automatically archiving them in
 the background. Its icon will change when you visit a bookmark it has archived,
 clicking on it opens the page on the archive. Archiving of bookmarks happens
 when you make a new bookmark and when you open an old bookmark. This can be
 disabled.
 
-You can manually archive webpages by clicking on the icon or using the
-Alt+Shift+Y hotkey (configurable). The URL for the archive is then copied to
-your clipboard, so you can easily paste the link for references and citations.
+You can manually archive webpages by clicking on the icon, using the Alt+Shift+Y
+hotkey (configurable), or via the page's right click context menu. The URL for
+the archive is then copied to your clipboard, so you can easily paste the link
+for references and citations.
 
 Happy archiving!
 
 ## Archiving Services
 
-Archiveror supports several online archiving service. You can change which one
-to use for manual archiving at the options.
+Archiveror supports several online archiving service. You can choose which one
+to use for manual archiving at the options. You can also select multiple
+services to archive a single page in multiple web archives.
 
 - [**archive.is**](https://archive.is), launched in 2012. Blocks (some)
   advertising and (user tracking) JavaScript.
@@ -39,7 +41,6 @@ to use for manual archiving at the options.
 [robot]: https://en.wikipedia.org/wiki/Robots_exclusion_standard
 
 ## Local Saving
-(Currently for Chrome only)
 
 Archiveror can also make local copies of webpages. One page will be saved in a
 single [MHTML](https://en.wikipedia.org/wiki/MHTML) file. Bookmarks will be
@@ -54,6 +55,14 @@ following your bookmark structure. If you move your bookmarks around, Archiveror
 will mirror your changes and likewise move your local archives. For this to work
 you need to check "Allow access to file URLs" at the extensions page. Go to your
 extensions and enable it: <https://i.imgur.com/ahrfe3M.png>.
+
+Local saving is currently only available for Chromium, vote
+for [this bug][1261339] if you want this feature on Firefox. Alternatively
+consider the [Mozilla Archive Format][maff] or [UnMHT][] add-ons.
+
+[1261339]: https://bugzilla.mozilla.org/show_bug.cgi?id=1261339
+[maff]: https://addons.mozilla.org/firefox/addon/mozilla-archive-format/
+[unmht]: https://addons.mozilla.org/firefox/addon/unmht/
 
 ## Installation
 

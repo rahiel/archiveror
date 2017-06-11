@@ -6,7 +6,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint . --ignore-path .gitignore && web-ext lint -s ./dist",
     "build": "webpack --optimize-minimize",
-    "firefox": "web-ext run -s ./dist --verbose",
+    "firefox": "web-ext run -s ./dist -f /usr/bin/firefox --verbose",
     "start": "webpack --watch"
   },
   "repository": {
@@ -23,7 +23,7 @@
     "eslint": "^3.19.0",
     "source-map-loader": "^0.2.1",
     "web-ext": "^1.9.1",
-    "webpack": "^2.5.0"
+    "webpack": "^2.6.1"
   },
   "babel": {
     "presets": [

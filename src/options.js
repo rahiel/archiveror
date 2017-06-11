@@ -25,8 +25,6 @@ function save_options() {
     chrome.storage.local.set({
         archiveMode: mode, archiveDir: dir, archiveBookmarks: bookmarks, archiveServices: services,
         email: email
-    }, function () {
-        message("Options saved.");
     });
 }
 
@@ -56,9 +54,17 @@ function restore_options() {
     }
 }
 document.addEventListener("DOMContentLoaded", restore_options);
-document.getElementById("save").addEventListener("click", save_options);
 document.getElementById("local").addEventListener("click", show_local);
 document.getElementById("online").addEventListener("click", show_local);
+
+let inputs = document.querySelectorAll(`input[type="checkbox"], input[type="radio"]`);
+for (let input of inputs) {
+    input.addEventListener("change", save_options);
+}
+let textInputs = document.querySelectorAll(`input[type="text"]`);
+for (let input of textInputs) {
+    input.addEventListener("input", save_options);
+}
 
 function show_local() {
     let local = document.getElementById("local").checked;
@@ -66,14 +72,6 @@ function show_local() {
         document.getElementById("local_options").style.display = "block";
     else
         document.getElementById("local_options").style.display = "none";
-}
-
-function message(text) {
-    let status = document.getElementById("status");
-    status.textContent = text;
-    window.setTimeout(function () {
-        status.textContent = "";
-    }, 3000);
 }
 
 if (!hasPageCapture) {

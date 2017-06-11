@@ -2,13 +2,14 @@
     "name": "Archiveror",
     "author": "Rahiel Kasim",
     "description": "Archive webpages on archive.is, archive.org and more or on your own computer in MHTML format. Automatically archive your bookmarks.",
-    "version": "0.6.1",
+    "version": "0.6.2",
     "applications": {
         "gecko": {
             "id": "archiveror@love.addons.mozilla.org",
             "strict_min_version": "52.0"
         }
     },
+    "minimum_chrome_version": "48",
     "icons": {
         "16": "icon-16.png",
         "48": "icon-48.png",

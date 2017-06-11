@@ -253,21 +253,23 @@ chrome.commands.onCommand.addListener(function (command) {
 });
 
 // context menu
-let menu = chrome.contextMenus.create({
-    title: "Archive",
-    id: "context-menu"
-});
-for (let service of services) {
-    chrome.contextMenus.create({
-        title: service,
-        id: service,
-        parentId: menu
+chrome.contextMenus.removeAll(function () {
+    let menu = chrome.contextMenus.create({
+        title: "Archive",
+        id: "context-menu"
     });
-}
-if (hasPageCapture) {
-    chrome.contextMenus.create({type: "separator", id: "separator", parentId: menu});
-    chrome.contextMenus.create({title: "Save MHTML as...", id: "MHTML", parentId: menu});
-}
+    for (let service of services) {
+        chrome.contextMenus.create({
+            title: service,
+            id: service,
+            parentId: menu
+        });
+    }
+    if (hasPageCapture) {
+        chrome.contextMenus.create({type: "separator", id: "separator", parentId: menu});
+        chrome.contextMenus.create({title: "Save MHTML as...", id: "MHTML", parentId: menu});
+    }
+});
 chrome.contextMenus.onClicked.addListener(function (info, tab) {
     if (info.menuItemId === "MHTML")
         saveLocal(tab, false);
@@ -279,7 +281,6 @@ function newBookmark(id, bookmark) {
     chrome.storage.local.get({archiveBookmarks: true}, function (items) {
         if (bookmark.hasOwnProperty("url") && items.archiveBookmarks === true) {
             archive(bookmark.url, true, undefined, bookmark);
-            getBookmarkTree();
         }
     });
 }
@@ -342,7 +343,6 @@ function moveLocal(id, moveInfo) {
                         chrome.downloads.removeFile(downloadId, function () {
                             downloadBlock.push(null);
                             saveDownload(newId, bookmark.url);
-                            getBookmarkTree();
                         });
                     });
                 });
@@ -360,58 +360,27 @@ function moveLocal(id, moveInfo) {
 chrome.bookmarks.onMoved.addListener(moveLocal);
 chrome.bookmarks.onChanged.addListener(moveLocal);
 
-// Block updating bookmarkTree when there's something in bookmarkBlock
-let bookmarkBlock = [];
-let bookmarkTree;
-
-function getBookmarkTree() {
-    if (bookmarkBlock.length > 0) {
-        window.setTimeout(getBookmarkTree, 200);
-        return;
-    }
-    chrome.bookmarks.getTree(function (bookmarks) {
-        bookmarkTree = bookmarks[0];
-    });
-}
-getBookmarkTree();
-
-function findBookmark(tree, id, callback) {
-    // find bookmark in bookmarkTree
-    // TODO: make synchronous
-    for (let i = 0; i < tree.children.length; i++) {
-        if (tree.children[i].id === id) {
-            callback(tree.children[i]);
-        } else if (tree.children[i].hasOwnProperty("children")) {
-            findBookmark(tree.children[i], id, callback);
-        }
-    }
-}
-
 function removeBookmark(id, removeInfo) {
-    bookmarkBlock.push(null);
-    findBookmark(bookmarkTree, id, deleteBookmarkNode);
+    let node = removeInfo.node;
 
-    function deleteBookmarkNode(bookmarkNode) {
-        if (bookmarkNode.hasOwnProperty("children")) {  // directory
-            for (let i = 0; i < bookmarkNode.children.length; i++) {
-                removeBookmark(bookmarkNode.children[i].id);
-            }
-            bookmarkBlock.pop();
-        } else {
-            deleteBookmark(bookmarkNode);
+    if (node.hasOwnProperty("children")) {  // directory
+        for (let child of node.children) {
+            removeBookmark(child.id, {node: child});
         }
+    } else {
+        deleteBookmark(node);
     }
 
     function deleteBookmark(bookmark) {
-        bookmarkBlock.pop();
-        getBookmarkTree();
         let url = bookmark.url;
 
         let key = "_" + url;
         chrome.storage.local.get(key, function (items) {
             // What if deleting the file fails?
-            chrome.downloads.removeFile(items[key].id);
             chrome.storage.local.remove(key);
+            if (items.hasOwnProperty(key) && hasPageCapture) {
+                chrome.downloads.removeFile(items[key].id);
+            }
         });
 
         chrome.storage.local.remove(url);

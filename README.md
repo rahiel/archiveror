@@ -29,16 +29,25 @@ to use for manual archiving at the options. You can also select multiple
 services to archive a single page in multiple web archives.
 
 - [**archive.is**](https://archive.is), launched in 2012. Blocks (some)
-  advertising and (user tracking) JavaScript.
-  [Example](https://archive.is/N0yex)
+  advertising and (user tracking) JavaScript. Links:
+  [Example](https://archive.is/N0yex), [FAQ][faq-archive.is],
+  [Wikipedia][wiki-archive.is].
 - [**archive.org**](https://archive.org/web/), launched in 2001. Respects
-  [robots.txt][robot] so it cannot archive all webpages.
-  [Example](https://web.archive.org/web/20160420095454/http://physics.weber.edu/schroeder/md/)
+  [robots.txt][robot] so it cannot archive all webpages. Links:
+  [Example](https://web.archive.org/web/20160420095454/http://physics.weber.edu/schroeder/md/),
+  [FAQ][faq-archive.org], [Wikipedia][wiki-archive.org].
 - [**webcitation.org**](http://www.webcitation.org), launched in 1997, respects
   robots.txt. You need to set an email address at the options to use it. Has a
-  focus on academic users. [Example](http://www.webcitation.org/6guJcxnyr)
+  focus on academic users. Links: [Example](http://www.webcitation.org/6guJcxnyr),
+  [FAQ][faq-webcite], [Wikipedia][wiki-webcite].
 
 [robot]: https://en.wikipedia.org/wiki/Robots_exclusion_standard
+[faq-archive.is]: https://archive.is/faq
+[faq-archive.org]: https://archive.org/about/faqs.php#The_Wayback_Machine
+[faq-webcite]: https://www.webcitation.org/faq
+[wiki-archive.is]: https://en.wikipedia.org/wiki/Archive.is
+[wiki-archive.org]: https://en.wikipedia.org/wiki/Internet_Archive
+[wiki-webcite]: https://en.wikipedia.org/wiki/WebCite
 
 ## Local Saving
 
@@ -77,7 +86,7 @@ consider the [Mozilla Archive Format][maff] or [UnMHT][] add-ons.
 * This extension would not be possible without the free archiving services
   provided by <https://archive.is>, <https://archive.org> and
   <http://www.webcitation.org>.
-* The essay [Archiving URLs](http://www.gwern.net/Archiving%20URLs) by Gwern
+* The essay [Archiving URLs](https://www.gwern.net/Archiving-URLs) by Gwern
   Branwen served as inspiration for this add-on.
 
 [floppy]: https://openclipart.org/detail/211780/matt-icons_media-floppy-by-sixsixfive-211780

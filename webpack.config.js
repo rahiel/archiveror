@@ -1,4 +1,6 @@
 /* global __dirname */
+const webpack = require("webpack");
+
 module.exports = {
     entry: {
         "dist/archiveror": "./src/archiveror.js",
@@ -18,5 +20,8 @@ module.exports = {
             },
             { test: /\.css$/, loader: "style!css" }
         ]
-    }
+    },
+    plugins: [
+        new webpack.optimize.ModuleConcatenationPlugin()
+    ]
 };

@@ -236,7 +236,18 @@ function sanitizeFilename(title) {
 }
 
 function makeFilename(title) {
-    return sanitizeFilename(title) + ".mhtml";
+    return sanitizeFilename(title) + "_" + getTimestamp() + ".mhtml";
+}
+
+function getTimestamp() {
+    let date = new Date();
+    let y = date.getUTCFullYear();
+    let m = date.getUTCMonth().toString().padStart(2, "0");
+    let d = date.getUTCDate().toString().padStart(2, "0");
+    let H = date.getUTCHours().toString().padStart(2, "0");
+    let M = date.getUTCMinutes().toString().padStart(2, "0");
+    let timestamp = `${y}-${m}-${d}_${H}-${M}`;
+    return timestamp;
 }
 
 // Keyboard shortcuts

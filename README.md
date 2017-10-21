@@ -54,7 +54,8 @@ services to archive a single page in multiple web archives.
 Archiveror can also make local copies of webpages. One page will be saved in a
 single [MHTML](https://en.wikipedia.org/wiki/MHTML) file. Bookmarks will be
 saved automatically. Pages can also be manually saved by either clicking the
-button or pressing Ctrl+Shift+S.
+button or pressing Ctrl+Shift+S. The filenames end with the UTC date and time of
+when the archive was made.
 
 To enable local archiving, right click the Archiveror button, go to the options
 and then pick "Local".

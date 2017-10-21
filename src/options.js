@@ -1,5 +1,6 @@
 import { hasPageCapture } from "./utils.js";
 
+
 function save_options() {
 
     function get_options(name) {
@@ -23,15 +24,21 @@ function save_options() {
     let bookmarks = document.getElementById("bookmarks").checked;
 
     chrome.storage.local.set({
-        archiveMode: mode, archiveDir: dir, archiveBookmarks: bookmarks, archiveServices: services,
-        email: email
+        archiveBookmarks: bookmarks,
+        archiveDir: dir,
+        archiveMode: mode,
+        archiveServices: services,
+        email: email,
     });
 }
 
 function restore_options() {
     chrome.storage.local.get({  // below are the default values
-        archiveMode: "online", archiveDir: "Archiveror", archiveBookmarks: true, archiveServices: ["archive.is"],
-        email: ""
+        archiveBookmarks: true,
+        archiveDir: "Archiveror",
+        archiveMode: "online",
+        archiveServices: ["archive.is"],
+        email: "",
     }, set_options);
 
     function set_options(items) {

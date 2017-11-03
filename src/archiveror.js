@@ -245,7 +245,7 @@ function makeFilename(title) {
 function getTimestamp() {
     let date = new Date();
     let y = date.getUTCFullYear();
-    let m = date.getUTCMonth().toString().padStart(2, "0");
+    let m = (date.getUTCMonth() + 1).toString().padStart(2, "0");
     let d = date.getUTCDate().toString().padStart(2, "0");
     let H = date.getUTCHours().toString().padStart(2, "0");
     let M = date.getUTCMinutes().toString().padStart(2, "0");

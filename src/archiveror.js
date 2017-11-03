@@ -7,7 +7,7 @@ function archive_is(url) {
     let request = new XMLHttpRequest();
     request.open("POST", "https://archive.is/submit/", true);
     request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-    let params = "url=" + encodeURIComponent(url) + "&anyway=1";
+    let params = "url=" + encodeURIComponent(url);
     request.onreadystatechange = function () {
         if (request.readyState === 4) {
             let link = request.response.match(/(https?:\/\/archive.is\/\w+)/)[0];

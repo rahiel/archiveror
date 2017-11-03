@@ -17,6 +17,7 @@
         "brace-style": ["error", "1tbs", {"allowSingleLine": true}],
         "comma-style": "error",
         "comma-dangle": ["error", "only-multiline"],
+        "curly": ["error", "multi-line"],
         "eqeqeq": "error",
         "dot-notation": "error",
         "no-unused-vars": 1,

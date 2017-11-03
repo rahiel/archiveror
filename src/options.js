@@ -52,9 +52,9 @@ function restore_options() {
             document.getElementById(s).checked = true;
         }
 
-        if (items.archiveMode === "online")
+        if (items.archiveMode === "online") {
             document.getElementById("online").checked = true;
-        else {
+        } else {
             document.getElementById("local").checked = true;
             document.getElementById("local_options").style.display = "block";
         }
@@ -75,10 +75,11 @@ for (let input of textInputs) {
 
 function show_local() {
     let local = document.getElementById("local").checked;
-    if (local === true)
+    if (local === true) {
         document.getElementById("local_options").style.display = "block";
-    else
+    } else {
         document.getElementById("local_options").style.display = "none";
+    }
 }
 
 if (!hasPageCapture) {

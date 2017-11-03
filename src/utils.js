@@ -4,8 +4,7 @@ const blacklist = ["file://", "about:", "chrome://", "http://127.0.0.1", "http:/
 
 export function is_local(url) {
     for (let b of blacklist) {
-        if (url.startsWith(b))
-            return true;
+        if (url.startsWith(b)) return true;
     }
     return false;
 }

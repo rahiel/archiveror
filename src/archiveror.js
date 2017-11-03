@@ -2,8 +2,7 @@ import { get_archiving_url, is_local, services, hasPageCapture } from "./utils.j
 
 
 function archive_is(url) {
-    if (is_local(url))
-        return;
+    if (is_local(url)) return;
     let request = new XMLHttpRequest();
     request.open("POST", "https://archive.is/submit/", true);
     request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -27,12 +26,12 @@ function postArchive(url, link) {
 
 // archive url online at services (a list of strings)
 function archivePage(url, services) {
-    if (is_local(url))
-        return;   // don't archive internal pages, "file://", "chrome://", etc.
+    if (is_local(url)) return;  // don't archive internal pages, "file://", "chrome://", etc.
     let tabId, link;
     chrome.storage.local.get({archiveServices: ["archive.is"], email: ""}, function (items) {
-        if (services === undefined)
+        if (services === undefined) {
             services = items.archiveServices;
+        }
         for (let service of services) {
             link = get_archiving_url(url, service, items.email);
 
@@ -54,8 +53,9 @@ function archivePage(url, services) {
         if (changeInfo.hasOwnProperty("isWindowClosing") || !re.test(tab.url)) {
             chrome.tabs.onUpdated.removeListener(url_to_clipboard);
             chrome.tabs.onRemoved.removeListener(url_to_clipboard);
-        } else
+        } else {
             writeClipboard(tab.url);
+        }
     }
 }
 
@@ -74,10 +74,11 @@ function writeClipboard(text) {
 function showArchive(url, bookmark) {
     // Notify user if we have an archive of the current page
     chrome.storage.local.get({archiveMode: "online", archiveBookmarks: true}, function (items) {
-        if (items.archiveMode === "local")
+        if (items.archiveMode === "local") {
             showBadge("_" + url, items.archiveBookmarks);
-        else
+        } else {
             showBadge(url, items.archiveBookmarks);
+        }
     });
 
     function showBadge(url, archiveBookmarks) {
@@ -94,10 +95,8 @@ function showArchive(url, bookmark) {
     }
 
     function normalURL(url) {
-        if (url[0] === "_")
-            return url.slice(1);
-        else
-            return url;
+        if (url[0] === "_") return url.slice(1);
+        else return url;
     }
 }
 
@@ -128,8 +127,9 @@ function archiveClick(tab) {
                     });
                 }
             });
-        } else if (text === buttonTitle.default)
+        } else if (text === buttonTitle.default) {
             archive(tab.url, false, tab);
+        }
     });
 }
 chrome.browserAction.onClicked.addListener(archiveClick);
@@ -140,10 +140,8 @@ function archive(url, save, tab, bookmark) {
 
     function userAction(items) {
         if (items.archiveMode === "online") {
-            if (save === true)
-                archive_is(url);
-            else
-                archivePage(url);
+            if (save === true) archive_is(url);
+            else archivePage(url);
         } else {
             if (typeof tab === "undefined") {  // for bookmark visit / creation
                 // tabs.query doesn't match fragment identifiers
@@ -154,8 +152,9 @@ function archive(url, save, tab, bookmark) {
                         saveLocal(tabs[0], save, path);
                     });
                 });
-            } else
+            } else {
                 saveLocal(tab, save);  // will never need bookmark
+            }
         }
     }
 }
@@ -282,10 +281,11 @@ chrome.contextMenus.removeAll(function () {
     }
 });
 chrome.contextMenus.onClicked.addListener(function (info, tab) {
-    if (info.menuItemId === "MHTML")
+    if (info.menuItemId === "MHTML") {
         saveLocal(tab, false);
-    else
+    } else {
         archivePage(info.pageUrl, [info.menuItemId]);
+    }
 });
 
 function newBookmark(id, bookmark) {
@@ -305,10 +305,11 @@ function getPath(bookmark, callback) {
         chrome.bookmarks.get(bookmark.parentId, function (bookmarks) {
             let node = bookmarks[0];
             nodes.push(sanitizeFilename(node.title));
-            if (node.parentId)
+            if (node.parentId) {
                 getParent(node);
-            else
+            } else {
                 callback(nodes.reverse().join("/") + "/");
+            }
         });
     }
 }

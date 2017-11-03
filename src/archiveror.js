@@ -227,10 +227,14 @@ function saveLocal(tab, automatic, path) {
 }
 
 function sanitizeFilename(title) {
-    // Chrome disallows <>:"/\|?*~ in filenames
+    // Chromium disallows <>:"/\|?*~ in filenames (raises an error in chrome.downloads.download)
     let name = title;
     let re = /[<>:"/\\|?*~]/g;
     name = title.replace(re, "_").trim();
+    // Chromium disallows filenames starting with a .
+    while (name.startsWith(".")) {
+        name = name.slice(1);
+    }
     return name;
 }
 

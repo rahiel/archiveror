@@ -45,7 +45,7 @@ function archivePage(url, services) {
         }
     });
 
-    let re = /.*(?:archive|webcitation)\.(?:is|org).*/;
+    let re = /.*(?:archive|perma|webcitation)\.(?:is|cc|org).*/;
     function url_to_clipboard(tab_id, changeInfo, tab) {
         if (tab_id !== tabId) {  // ignore other tabs
             return;

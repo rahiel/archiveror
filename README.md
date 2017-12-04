@@ -74,12 +74,11 @@ extensions and enable it: <https://i.imgur.com/ahrfe3M.png>.
 
 Local saving is currently only available for Chromium, vote
 for [this bug][1261339] if you want this feature on Firefox. Alternatively
-consider the [Mozilla Archive Format][maff] or [UnMHT][] add-ons.
+consider the [Save Page WE][] add-on.
 
 [MHTML]: https://en.wikipedia.org/wiki/MHTML
 [1261339]: https://bugzilla.mozilla.org/show_bug.cgi?id=1261339
-[maff]: https://addons.mozilla.org/firefox/addon/mozilla-archive-format/
-[unmht]: https://addons.mozilla.org/firefox/addon/unmht/
+[Save Page WE]: https://addons.mozilla.org/firefox/addon/save-page-we/
 
 ## Installation
 

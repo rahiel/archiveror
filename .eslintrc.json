@@ -18,6 +18,7 @@
         "comma-style": "error",
         "comma-dangle": ["error", "only-multiline"],
         "curly": ["error", "multi-line"],
+        "camelcase": "warn",
         "eqeqeq": "error",
         "dot-notation": "error",
         "no-unused-vars": 1,

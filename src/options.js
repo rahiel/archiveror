@@ -1,9 +1,9 @@
 import { hasPageCapture } from "./utils.js";
 
 
-function save_options() {
+function saveOptions() {
 
-    function get_options(name) {
+    function getOptions(name) {
         // get the selected options by name
         let checkboxes = document.getElementsByName(name);
         let options = [];
@@ -15,8 +15,8 @@ function save_options() {
         return options;
     }
 
-    let mode = get_options("mode")[0];
-    let services = get_options("service");
+    let mode = getOptions("mode")[0];
+    let services = getOptions("service");
 
     let dir = document.getElementById("dir").value;
     // TODO: check dir for forbidden characters
@@ -32,16 +32,16 @@ function save_options() {
     });
 }
 
-function restore_options() {
+function restoreOptions() {
     chrome.storage.local.get({  // below are the default values
         archiveBookmarks: true,
         archiveDir: "Archiveror",
         archiveMode: "online",
         archiveServices: ["archive.is"],
         email: "",
-    }, set_options);
+    }, setOptions);
 
-    function set_options(items) {
+    function setOptions(items) {
         if (items.archiveBookmarks === true) {
             document.getElementById("bookmarks").checked = true;
         }
@@ -60,20 +60,20 @@ function restore_options() {
         }
     }
 }
-document.addEventListener("DOMContentLoaded", restore_options);
-document.getElementById("local").addEventListener("click", show_local);
-document.getElementById("online").addEventListener("click", show_local);
+document.addEventListener("DOMContentLoaded", restoreOptions);
+document.getElementById("local").addEventListener("click", showLocal);
+document.getElementById("online").addEventListener("click", showLocal);
 
 let inputs = document.querySelectorAll(`input[type="checkbox"], input[type="radio"]`);
 for (let input of inputs) {
-    input.addEventListener("change", save_options);
+    input.addEventListener("change", saveOptions);
 }
 let textInputs = document.querySelectorAll(`input[type="text"]`);
 for (let input of textInputs) {
-    input.addEventListener("input", save_options);
+    input.addEventListener("input", saveOptions);
 }
 
-function show_local() {
+function showLocal() {
     let local = document.getElementById("local").checked;
     if (local === true) {
         document.getElementById("local_options").style.display = "block";

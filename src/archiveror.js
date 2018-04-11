@@ -1,8 +1,8 @@
-import { get_archiving_url, is_local, services, hasPageCapture } from "./utils.js";
+import { getArchivingURL, isLocal, services, hasPageCapture } from "./utils.js";
 
 
 function archive_is(url) {
-    if (is_local(url)) return;
+    if (isLocal(url)) return;
     let request = new XMLHttpRequest();
     request.open("POST", "https://archive.is/submit/", true);
     request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -26,33 +26,33 @@ function postArchive(url, link) {
 
 // archive url online at services (a list of strings)
 function archivePage(url, services) {
-    if (is_local(url)) return;  // don't archive internal pages, "file://", "chrome://", etc.
+    if (isLocal(url)) return;  // don't archive internal pages, "file://", "chrome://", etc.
     let tabId, link;
     chrome.storage.local.get({archiveServices: ["archive.is"], email: ""}, function (items) {
         if (services === undefined) {
             services = items.archiveServices;
         }
         for (let service of services) {
-            link = get_archiving_url(url, service, items.email);
+            link = getArchivingURL(url, service, items.email);
 
             chrome.tabs.create({url: link}, function (tab) {
                 tabId = tab.id;
                 // support updating clipboard with new link from archive.is "save the page again"
-                chrome.tabs.onUpdated.addListener(url_to_clipboard);
-                chrome.tabs.onRemoved.addListener(url_to_clipboard);
+                chrome.tabs.onUpdated.addListener(URLToClipboard);
+                chrome.tabs.onRemoved.addListener(URLToClipboard);
             });
         }
     });
 
     let re = /.*(?:archive|perma|webcitation)\.(?:is|cc|org).*/;
-    function url_to_clipboard(tab_id, changeInfo, tab) {
-        if (tab_id !== tabId) {  // ignore other tabs
+    function URLToClipboard(thisTabId, changeInfo, tab) {
+        if (thisTabId !== tabId) {  // ignore other tabs
             return;
         }
         // remove listeners if the tab was closed and if user navigated away from archive
         if (changeInfo.hasOwnProperty("isWindowClosing") || !re.test(tab.url)) {
-            chrome.tabs.onUpdated.removeListener(url_to_clipboard);
-            chrome.tabs.onRemoved.removeListener(url_to_clipboard);
+            chrome.tabs.onUpdated.removeListener(URLToClipboard);
+            chrome.tabs.onRemoved.removeListener(URLToClipboard);
         } else {
             writeClipboard(tab.url);
         }

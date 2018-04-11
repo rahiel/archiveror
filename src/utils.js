@@ -2,14 +2,14 @@ export const services = ["archive.is", "archive.org", "perma.cc", "webcitation.o
 
 const blacklist = ["file://", "about:", "chrome://", "http://127.0.0.1", "http://localhost"];
 
-export function is_local(url) {
+export function isLocal(url) {
     for (let b of blacklist) {
         if (url.startsWith(b)) return true;
     }
     return false;
 }
 
-export function get_archiving_url(page, service, email) {
+export function getArchivingURL(page, service, email) {
     let url = "https://archive.is/?run=1&url=" + encodeURIComponent(page); // default
     if (service === "archive.org") {
         // breaks if page is URI encoded

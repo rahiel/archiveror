@@ -36,3 +36,43 @@ export function getArchivingURL(page, service, email) {
     }
     return url;
 }
+
+export function sanitizeFilename(title) {
+    // Chromium disallows <>:"/\|?*~ in filenames (raises an error in chrome.downloads.download)
+    let name = title;
+    let re = /[<>:"/\\|?*~]/g;
+    name = title.replace(re, "_").trim();
+    // Chromium disallows filenames starting with a .
+    while (name.startsWith(".")) {
+        name = name.slice(1);
+    }
+    return name;
+}
+
+export function makeFilename(title) {
+    return sanitizeFilename(title) + "_" + getTimestamp() + ".mhtml";
+}
+
+function getTimestamp() {
+    let date = new Date();
+    let y = date.getUTCFullYear();
+    let m = (date.getUTCMonth() + 1).toString().padStart(2, "0");
+    let d = date.getUTCDate().toString().padStart(2, "0");
+    let H = date.getUTCHours().toString().padStart(2, "0");
+    let M = date.getUTCMinutes().toString().padStart(2, "0");
+    let timestamp = `${y}-${m}-${d}_${H}-${M}`;
+    return timestamp;
+}
+
+export function writeClipboard(text) {
+    // write text to clipboard
+    let textarea = document.createElement("textarea");
+    textarea.textContent = text;
+    document.body.appendChild(textarea);
+    let range = document.createRange();
+    range.selectNode(textarea);
+    window.getSelection().addRange(range);
+    document.execCommand("copy");
+    window.getSelection().removeAllRanges();
+    document.body.removeChild(textarea);
+}

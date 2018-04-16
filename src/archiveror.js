@@ -1,4 +1,6 @@
-import { defaults, getArchivingURL, isLocal, services, hasPageCapture } from "./utils.js";
+import {
+    defaults, getArchivingURL, hasPageCapture, isLocal, makeFilename, sanitizeFilename, services, writeClipboard
+} from "./utils.js";
 
 
 function archive_is(url) {
@@ -68,19 +70,6 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
         });
     }
 });
-
-function writeClipboard(text) {
-    // write text to clipboard
-    let textarea = document.createElement("textarea");
-    textarea.textContent = text;
-    document.body.appendChild(textarea);
-    let range = document.createRange();
-    range.selectNode(textarea);
-    window.getSelection().addRange(range);
-    document.execCommand("copy");
-    window.getSelection().removeAllRanges();
-    document.body.removeChild(textarea);
-}
 
 function showArchive(url, bookmark) {
     // Notify user if we have an archive of the current page, otherwise archive if needed
@@ -194,33 +183,6 @@ function saveLocal(tab, automatic, path) {
             chrome.downloads.download({url: url, filename: filename, saveAs: true});
         }
     }
-}
-
-function sanitizeFilename(title) {
-    // Chromium disallows <>:"/\|?*~ in filenames (raises an error in chrome.downloads.download)
-    let name = title;
-    let re = /[<>:"/\\|?*~]/g;
-    name = title.replace(re, "_").trim();
-    // Chromium disallows filenames starting with a .
-    while (name.startsWith(".")) {
-        name = name.slice(1);
-    }
-    return name;
-}
-
-function makeFilename(title) {
-    return sanitizeFilename(title) + "_" + getTimestamp() + ".mhtml";
-}
-
-function getTimestamp() {
-    let date = new Date();
-    let y = date.getUTCFullYear();
-    let m = (date.getUTCMonth() + 1).toString().padStart(2, "0");
-    let d = date.getUTCDate().toString().padStart(2, "0");
-    let H = date.getUTCHours().toString().padStart(2, "0");
-    let M = date.getUTCMinutes().toString().padStart(2, "0");
-    let timestamp = `${y}-${m}-${d}_${H}-${M}`;
-    return timestamp;
 }
 
 // Keyboard shortcuts

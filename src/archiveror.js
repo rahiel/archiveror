@@ -11,8 +11,7 @@ function archive_is(url) {
     let params = "url=" + encodeURIComponent(url);
     request.onreadystatechange = function () {
         if (request.readyState === 4) {
-            let link = request.response.match(/(https?:\/\/archive.is\/\w+)/)[0];
-            // TODO: upgrade link to https
+            let link = request.responseURL;
             postArchive(url, link);
         }
     };
@@ -337,11 +336,19 @@ function removeBookmark(id, removeInfo) {
 }
 chrome.bookmarks.onRemoved.addListener(removeBookmark);
 
-// Remove deprecated "archiveMode" setting. TODO: remove this
+// Migrate deprecated "archiveMode" setting. TODO: remove this (from April 2018)
 chrome.runtime.onInstalled.addListener(function (details) {
     let key = "archiveMode";
-    chrome.storage.local.get(key, function (items) {
-        if (items[key]) {
+    chrome.storage.local.get({[key]: false, bookmarkServices: defaults.bookmarkServices}, function (items) {
+        const archiveMode = items[key];
+        if (archiveMode !== false) {
+            if (archiveMode === "local") {
+                let bookmarkServices = items.bookmarkServices;
+                if (!bookmarkServices.includes("mhtml")) {
+                    bookmarkServices.push("mhtml");
+                    chrome.storage.local.set({bookmarkServices: bookmarkServices});
+                }
+            }
             chrome.storage.local.remove(key);
         }
     });

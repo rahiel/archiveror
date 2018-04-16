@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="utf-8">
   <title>Archiveror Options</title>
   <style type="text/css">
    body {padding: 10px; line-height: 1.6; font-size: 14px}
@@ -9,7 +10,7 @@
 </head>
 <body>
   <h3>Archiving Service</h3>
-  <p>The online archiving service(s) to use for manual archiving.</p>
+  <p>The archiving service(s) to use for manual archiving.</p>
   <label for="archive.is">
     <input type="checkbox" name="service" id="archive.is" value="archive.is">
     <a href="https://archive.is/">archive.is</a>
@@ -29,16 +30,42 @@
     <input type="checkbox" name="service" id="webcitation.org" value="webcitation.org">
     <a href="http://webcitation.org/">webcitation.org</a> (requires email, no HTTPS)
   </label>
+  <br>
+  <div class="mhtml">
+    <label for="mhtml">
+      <input type="checkbox" name="service" id="mhtml" value="mhtml">
+      MHTML
+    </label>
+  </div>
 
-  <div id="archivingMode">
-    <h3>Archiving mode</h3>
-    <label for="online">
-      <input type="radio" name="mode" id="online" value="online">Online
+  <div id="email_option">
+    <h3>Email Address</h3>
+    The email address used for archiving on webcitation.org. You will receive a link to the archive by email.
+    <table>
+      <tr>
+        <td><label for="email">Email:</label></td>
+        <td><input type="text" id="email"></td>
+      </tr>
+    </table>
+  </div>
+
+  <h3>Bookmarks</h3>
+  <label for="bookmarks">
+    <input type="checkbox" id="bookmarks">Automatically archive bookmarks
+  </label>
+  <div id="bookmark_options">
+    <p>Select which archives to make for bookmarks:</p>
+
+    <label for="bookmark-archive.is">
+      <input type="checkbox" name="bookmarkService" id="bookmark-archive.is" value="archive.is">
+      <a href="https://archive.is/">archive.is</a>
     </label>
-    <br>
-    <label for="local">
-      <input type="radio" name="mode" id="local" value="local">Local (MHTML)
-    </label>
+    <div class="mhtml">
+      <label for="bookmark-mhtml">
+        <input type="checkbox" name="bookmarkService" id="bookmark-mhtml" value="mhtml">
+        MHTML
+      </label>
+    </div>
   </div>
 
   <div id="local_options" style="display:none">
@@ -54,23 +81,6 @@
     (<a href="https://support.google.com/chrome/answer/95574">instructions</a>)
   </div>
 
-  <div id="email_option">
-    <h3>Email Address</h3>
-    The email address used for archiving on webcitation.org. You will receive a link to the archive by email.
-    <table>
-      <tr>
-        <td><label for="email">Email:</label></td>
-        <td><input type="text" id="email"></td>
-      </tr>
-    </table>
-  </div>
-
-  <div style="margin-bottom: 10px">
-    <h3>Bookmarks</h3>
-    <label for="bookmarks">
-      <input type="checkbox" id="bookmarks">Automatically archive bookmarks
-    </label>
-  </div>
 
   <script src="options.js"></script>
 </body>

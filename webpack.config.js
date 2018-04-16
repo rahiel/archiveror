@@ -4,7 +4,8 @@ const webpack = require("webpack");
 module.exports = {
     entry: {
         "dist/archiveror": "./src/archiveror.js",
-        "dist/options": "./src/options.js"
+        "dist/options": "./src/options.js",
+        "dist/popup": "./src/popup.js",
     },
     output: {
         path: __dirname + "/",

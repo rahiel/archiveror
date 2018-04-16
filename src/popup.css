@@ -1,0 +1,30 @@
+button {
+    color: #fff;
+    background-color: #337ab7;
+    border: 1px solid #2e6da4;
+    border-radius: 4px;
+    padding: 6px 12px;
+    margin: 5px 3px;
+    width: 100%;
+    text-align: center;
+}
+
+button:hover {
+    background-color: #286090;
+    border-color: #204d74;
+}
+
+ul {
+    padding-left: 15px;
+}
+
+a {
+    color: #1a0dab;
+    text-decoration: none;
+}
+a:hover { text-decoration: underline; }
+a:visited { color: #609; }
+
+#bookmarkSection {
+    display: none;
+}

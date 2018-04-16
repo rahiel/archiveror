@@ -1,8 +1,22 @@
-export const services = ["archive.is", "archive.org", "perma.cc", "webcitation.org"];
+export const services = ["archive.is", "archive.org", "perma.cc", "webcitation.org"];  // note: doesn't include "mhtml"
 
-const blacklist = ["file://", "about:", "chrome://", "http://127.0.0.1", "http://localhost"];
+export const defaults = {
+    archiveBookmarks: true,
+    archiveDir: "Archiveror",
+    archiveServices: ["archive.is"],
+    bookmarkServices: ["archive.is"],
+    email: "",
+};
+
+export let hasPageCapture;
+if (chrome.hasOwnProperty("pageCapture")) {
+    hasPageCapture = true;
+} else {
+    hasPageCapture = false;
+}
 
 export function isLocal(url) {
+    const blacklist = ["file://", "about:", "chrome://", "http://127.0.0.1", "http://localhost"];
     for (let b of blacklist) {
         if (url.startsWith(b)) return true;
     }
@@ -21,11 +35,4 @@ export function getArchivingURL(page, service, email) {
         url = base + encodeURIComponent(page) + "&email=" + encodeURIComponent(email);
     }
     return url;
-}
-
-export let hasPageCapture;
-if (chrome.hasOwnProperty("pageCapture")) {
-    hasPageCapture = true;
-} else {
-    hasPageCapture = false;
 }

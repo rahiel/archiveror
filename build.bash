@@ -19,4 +19,4 @@ if [[ $BROWSER = 'chromium' ]]; then
     mv mani.json manifest.json
 fi
 
-zip archiveror.zip *.js *.html *.png manifest.json LICENSE.txt
+zip archiveror.zip *.js *.html *.css *.png manifest.json LICENSE.txt

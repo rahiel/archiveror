@@ -17,15 +17,16 @@
     },
 
     "permissions": [
-        "tabs",
+        "<all_urls>",
         "bookmarks",
-        "storage",
+        "clipboardWrite",
+        "contextMenus",
         "downloads",
         "downloads.shelf",
         "pageCapture",
-        "<all_urls>",
-        "clipboardWrite",
-        "contextMenus"
+        "storage",
+        "tabs",
+        "unlimitedStorage"
     ],
 
     "background": {
@@ -38,7 +39,8 @@
             "19": "icon-19.png",
             "38": "icon-38.png"
         },
-        "default_title": "Archive Page"
+        "default_title": "Archiveror",
+        "default_popup": "popup.html"
     },
 
     "options_ui": {

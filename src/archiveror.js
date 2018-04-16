@@ -1,4 +1,4 @@
-import { getArchivingURL, isLocal, services, hasPageCapture } from "./utils.js";
+import { defaults, getArchivingURL, isLocal, services, hasPageCapture } from "./utils.js";
 
 
 function archive_is(url) {
@@ -10,25 +10,24 @@ function archive_is(url) {
     request.onreadystatechange = function () {
         if (request.readyState === 4) {
             let link = request.response.match(/(https?:\/\/archive.is\/\w+)/)[0];
+            // TODO: upgrade link to https
             postArchive(url, link);
         }
     };
     request.send(params);
+
+    function postArchive(url, link) {
+        chrome.storage.local.set({[url]: link}, function () {
+            showArchive(url);
+        });
+    }
 }
 
-function postArchive(url, link) {
-    let data = {};
-    data[url] = link;
-    chrome.storage.local.set(data, function () {
-        showArchive(url);
-    });
-}
-
-// archive url online at services (a list of strings)
-function archivePage(url, services) {
+function archiveOnline(url, services) {
+    // archive url online at services (a list of strings)
     if (isLocal(url)) return;  // don't archive internal pages, "file://", "chrome://", etc.
     let tabId, link;
-    chrome.storage.local.get({archiveServices: ["archive.is"], email: ""}, function (items) {
+    chrome.storage.local.get({archiveServices: defaults.archiveServices, email: defaults.email}, function (items) {
         if (services === undefined) {
             services = items.archiveServices;
         }
@@ -59,7 +58,19 @@ function archivePage(url, services) {
     }
 }
 
+// archive requests from popup
+chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+    if (message.label === "archiveOnline") {
+        archiveOnline(message.url, message.services);
+    } else if (message.label === "saveLocal") {
+        chrome.tabs.get(message.tabId, function (tab) {
+            saveLocal(tab, false);
+        });
+    }
+});
+
 function writeClipboard(text) {
+    // write text to clipboard
     let textarea = document.createElement("textarea");
     textarea.textContent = text;
     document.body.appendChild(textarea);
@@ -72,31 +83,38 @@ function writeClipboard(text) {
 }
 
 function showArchive(url, bookmark) {
-    // Notify user if we have an archive of the current page
-    chrome.storage.local.get({archiveMode: "online", archiveBookmarks: true}, function (items) {
-        if (items.archiveMode === "local") {
-            showBadge("_" + url, items.archiveBookmarks);
-        } else {
-            showBadge(url, items.archiveBookmarks);
-        }
-    });
+    // Notify user if we have an archive of the current page, otherwise archive if needed
+    let keys = {
+        [url]: false,
+        ["_" + url]: false,
+        archiveBookmarks: defaults.archiveBookmarks,
+        bookmarkServices: defaults.bookmarkServices
+    };
+    chrome.storage.local.get(keys, showBadge);
 
-    function showBadge(url, archiveBookmarks) {
-        chrome.storage.local.get(url, function (data) {
-            if (data[url]) {
-                let taburl = normalURL(url).split("#")[0];
-                chrome.tabs.query({"url": taburl}, function (tabs) {
-                    changeBadge(tabs, buttonTitle.present, "!", "#FFB90F");
-                });
-            } else if (archiveBookmarks === true) {
-                archive(normalURL(url), true, undefined, bookmark);
+    function showBadge(items) {
+        let taburl = url.split("#")[0];
+        chrome.tabs.query({"url": taburl}, function (tabs) {
+            let save = (items.archiveBookmarks === true);
+            let title = buttonTitle.default + " (bookmark archived)";
+
+            if (items[url] !== false) {
+                changeBadge(tabs, title, "!", "#FFB90F");
+            } else {
+                if (save && items.bookmarkServices.includes("archive.is")) archive_is(url);
+            }
+
+            if (items["_" + url] !== false) {
+                changeBadge(tabs, title, "!", "#FFB90F");
+            } else {
+                if (save && items.bookmarkServices.includes("mhtml")) {
+                    downloadBlock.push(tabs[0].id);
+                    getPath(bookmark, function (path) {
+                        saveLocal(tabs[0], save, path);
+                    });
+                }
             }
         });
-    }
-
-    function normalURL(url) {
-        if (url[0] === "_") return url.slice(1);
-        else return url;
     }
 }
 
@@ -109,59 +127,11 @@ function changeBadge(tabs, title, badgeText, badgeColor) {
     }
 }
 
-const buttonTitle = {default: "Archive Page", present: "Go to archived page"};
-
-function archiveClick(tab) {
-    // When user clicks on button
-    chrome.browserAction.getTitle({tabId: tab.id}, function (text) {
-        if (text === buttonTitle.present) {
-            chrome.storage.local.get({archiveMode: "online"}, function (items) {
-                if (items.archiveMode === "local") {
-                    chrome.storage.local.get("_" + tab.url, function (data) {
-                        let url = data["_" + tab.url].filename;
-                        chrome.tabs.create({"url": "file://" + url});
-                    });
-                } else {
-                    chrome.storage.local.get(tab.url, function (key) {
-                        chrome.tabs.create({"url": key[tab.url]});
-                    });
-                }
-            });
-        } else if (text === buttonTitle.default) {
-            archive(tab.url, false, tab);
-        }
-    });
-}
-chrome.browserAction.onClicked.addListener(archiveClick);
-
-function archive(url, save, tab, bookmark) {
-    // tab and bookmark are optional
-    chrome.storage.local.get({archiveMode: "online"}, userAction);
-
-    function userAction(items) {
-        if (items.archiveMode === "online") {
-            if (save === true) archive_is(url);
-            else archivePage(url);
-        } else {
-            if (typeof tab === "undefined") {  // for bookmark visit / creation
-                // tabs.query doesn't match fragment identifiers
-                url = url.split("#")[0];
-                chrome.tabs.query({"url": url}, function (tabs) {
-                    downloadBlock.push(tabs[0].id);
-                    getPath(bookmark, function (path) {
-                        saveLocal(tabs[0], save, path);
-                    });
-                });
-            } else {
-                saveLocal(tab, save);  // will never need bookmark
-            }
-        }
-    }
-}
+const buttonTitle = {default: "Archiveror"};
 
 function silentDownload(url, filename, path, callback) {
     // silently download to archiveDir
-    chrome.storage.local.get({archiveDir: "Archiveror"}, function (items) {
+    chrome.storage.local.get({archiveDir: defaults.archiveDir}, function (items) {
         filename = items.archiveDir + path + filename;
         chrome.downloads.download({
             url: url, filename: filename, saveAs: false, conflictAction: "overwrite"}, callback);
@@ -257,7 +227,7 @@ function getTimestamp() {
 chrome.commands.onCommand.addListener(function (command) {
     let action;
     if (command === "archive-page") {
-        action = function (tabs) { archivePage(tabs[0].url); };
+        action = function (tabs) { archiveOnline(tabs[0].url); };
     } else if (command === "save-local") {
         action = function (tabs) { saveLocal(tabs[0], false); };
     }
@@ -288,16 +258,14 @@ chrome.contextMenus.onClicked.addListener(function (info, tab) {
     if (info.menuItemId === "MHTML") {
         saveLocal(tab, false);
     } else {
-        archivePage(info.pageUrl, [info.menuItemId]);
+        archiveOnline(info.pageUrl, [info.menuItemId]);
     }
 });
 
 function newBookmark(id, bookmark) {
-    chrome.storage.local.get({archiveBookmarks: true}, function (items) {
-        if (bookmark.hasOwnProperty("url") && items.archiveBookmarks === true) {
-            archive(bookmark.url, true, undefined, bookmark);
-        }
-    });
+    if (bookmark.hasOwnProperty("url")) {
+        showArchive(bookmark.url, bookmark);
+    }
 }
 chrome.bookmarks.onCreated.addListener(newBookmark);
 
@@ -326,7 +294,6 @@ function bookmarkVisit(tabId, changeInfo, tab) {
         if (downloadBlock.indexOf(tabId) > -1) return;
         chrome.bookmarks.search({url: tab.url}, function (bookmarks) {
             if (bookmarks.length > 0 && bookmarks[0].url === tab.url) {
-                // bookmarks[0] propagates to archive function
                 showArchive(bookmarks[0].url, bookmarks[0]);
             }
         });
@@ -407,3 +374,13 @@ function removeBookmark(id, removeInfo) {
     }
 }
 chrome.bookmarks.onRemoved.addListener(removeBookmark);
+
+// Remove deprecated "archiveMode" setting. TODO: remove this
+chrome.runtime.onInstalled.addListener(function (details) {
+    let key = "archiveMode";
+    chrome.storage.local.get(key, function (items) {
+        if (items[key]) {
+            chrome.storage.local.remove(key);
+        }
+    });
+});

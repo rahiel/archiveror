@@ -11,6 +11,7 @@ function requestOnline(services) {
                 services: services,
                 url: url,
             });
+            closePopup();
         });
     }
 
@@ -24,6 +25,7 @@ function requestMHTML() {
             label: "saveLocal",
             tabId: tab.id,
         });
+        closePopup();
     });
 }
 
@@ -35,6 +37,7 @@ function requestArchiveNow() {
             tabId: tab.id,
             url: tab.url,
         });
+        closePopup();
     });
 }
 
@@ -66,8 +69,8 @@ function showElements() {
 
             function addArchiveLink(url) {
                 let e = document.createElement("li");
-                e.innerHTML = `<a href="${url}">${url}</a>`;
-                e.onclick = function () { chrome.tabs.create({url: url}); };
+                e.innerHTML = `<a>${url}</a>`;
+                e.onclick = openURL(url);
                 document.getElementById("archiveList").appendChild(e);
                 showBookmarkSection = true;
             }
@@ -80,11 +83,24 @@ function showElements() {
 }
 showElements();
 
+function closePopup() {
+    // Popups are not automatically closed after opening new tabs in Firefox.
+    window.close();
+}
+
+function openURL(url) {
+    function f() {
+        chrome.tabs.create({url: url});
+        closePopup();
+    }
+    return f;
+}
+
 function showVersion() {
     const manifest = chrome.runtime.getManifest();
     const version = manifest.version;
     const url = manifest.homepage_url;
     document.getElementById("version").textContent = version;
-    document.getElementsByTagName("footer")[0].onclick = function () { chrome.tabs.create({url: url}); };
+    document.getElementsByTagName("footer")[0].onclick = openURL(url);
 }
 showVersion();

@@ -99,16 +99,15 @@ function showArchive(url, bookmark) {
         let taburl = url.split("#")[0];
         chrome.tabs.query({"url": taburl}, function (tabs) {
             let save = (items.archiveBookmarks === true);
-            let title = buttonTitle.default + " (bookmark archived)";
 
             if (items[url] !== false) {
-                changeBadge(tabs, title, "!", "#FFB90F");
+                changeBadge(tabs, badgeStyles.alert);
             } else {
                 if (save && items.bookmarkServices.includes("archive.is")) archive_is(url);
             }
 
             if (items["_" + url] !== false) {
-                changeBadge(tabs, title, "!", "#FFB90F");
+                changeBadge(tabs, badgeStyles.alert);
             } else {
                 if (save && items.bookmarkServices.includes("mhtml")) {
                     downloadBlock.push(tabs[0].id);
@@ -121,7 +120,8 @@ function showArchive(url, bookmark) {
     }
 }
 
-function changeBadge(tabs, title, badgeText, badgeColor) {
+function changeBadge(tabs, style) {
+    const [title, badgeText, badgeColor] = style;
     for (let t of tabs) {
         // Following changes reset automatically when the tab changes
         chrome.browserAction.setTitle({title: title, tabId: t.id});
@@ -129,8 +129,11 @@ function changeBadge(tabs, title, badgeText, badgeColor) {
         chrome.browserAction.setBadgeBackgroundColor({color: badgeColor, tabId: t.id});
     }
 }
-
-const buttonTitle = {default: "Archiveror"};
+const badgeStyles = {
+    default: ["Archiveror", "", "#5dce2d"],
+    alert: ["Archiveror (bookmark archived)", "!", "#FFB90F"],
+    wait: ["Archiveror (busy)", "WAIT", "#d80f30"],
+};
 
 function silentDownload(url, filename, path, callback) {
     // silently download to archiveDir
@@ -175,7 +178,7 @@ function saveLocal(tab, automatic, path) {
     // ask user for input if automatic is false, else silently download
     if (tab.status !== "complete") {
         // Only save page after it has fully loaded
-        changeBadge([tab], "Please wait!", "WAIT", "#d80f30");
+        changeBadge([tab], badgeStyles.wait);
         window.setTimeout(function () {
             chrome.tabs.get(tab.id, function (newTab) {
                 saveLocal(newTab, automatic, path);
@@ -194,7 +197,9 @@ function saveLocal(tab, automatic, path) {
                 saveDownload(downloadId, tab.url);
             });
         } else {
-            chrome.downloads.download({url: url, filename: filename, saveAs: true});
+            chrome.downloads.download({url: url, filename: filename, saveAs: true}, function (downloadId) {
+                changeBadge([tab], badgeStyles.default);
+            });
         }
     }
 }
@@ -345,7 +350,7 @@ function removeBookmark(id, removeInfo) {
         chrome.storage.local.remove(url);
 
         chrome.tabs.query({"url": url}, function (tabs) {
-            changeBadge(tabs, buttonTitle.default, "", "#5dce2d");
+            changeBadge(tabs, badgeStyles.default);
         });
     }
 }

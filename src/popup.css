@@ -1,3 +1,7 @@
+body {
+    margin: 8px;
+}
+
 button {
     color: #fff;
     background-color: #337ab7;
@@ -5,8 +9,9 @@ button {
     border-radius: 4px;
     padding: 6px 12px;
     margin: 5px 3px;
-    width: 100%;
+    width: 95%;
     text-align: center;
+    font-size: 14px;
 }
 
 button:hover {
@@ -23,8 +28,17 @@ a {
     text-decoration: none;
 }
 a:hover { text-decoration: underline; }
-a:visited { color: #609; }
 
 #bookmarkSection, #local {
     display: none;
+}
+
+footer {
+    color: #555;
+    font-size: 10px;
+    text-align: center;
+    margin-top: 7px;
+}
+footer > a {
+    color: #555;
 }

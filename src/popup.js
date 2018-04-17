@@ -79,3 +79,12 @@ function showElements() {
     });
 }
 showElements();
+
+function showVersion() {
+    const manifest = chrome.runtime.getManifest();
+    const version = manifest.version;
+    const url = manifest.homepage_url;
+    document.getElementById("version").textContent = version;
+    document.getElementsByTagName("footer")[0].onclick = function () { chrome.tabs.create({url: url}); };
+}
+showVersion();

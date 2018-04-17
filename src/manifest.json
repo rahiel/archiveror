@@ -2,6 +2,7 @@
     "name": "Archiveror",
     "author": "Rahiel Kasim",
     "description": "Archive webpages on archive.is, archive.org and more or on your own computer in MHTML format. Automatically archive your bookmarks.",
+    "homepage_url": "https://github.com/rahiel/archiveror",
     "version": "0.8",
     "applications": {
         "gecko": {
@@ -40,7 +41,8 @@
             "38": "icon-38.png"
         },
         "default_title": "Archiveror",
-        "default_popup": "popup.html"
+        "default_popup": "popup.html",
+        "browser_style": true
     },
 
     "options_ui": {

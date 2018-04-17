@@ -69,17 +69,21 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
             saveLocal(tab, false);
         });
     } else if (message.label === "archiveNow") {
-        chrome.storage.local.get({archiveServices: defaults.archiveServices}, function (items) {
-            let services = items.archiveServices;
-            archiveOnline(message.url, services);
-            if (services.includes("mhtml")) {
-                chrome.tabs.get(message.tabId, function (tab) {
-                    saveLocal(tab, false);
-                });
-            }
-        });
+        archiveNow(message.url, message.tabId);
     }
 });
+
+function archiveNow(url, tabId) {
+    chrome.storage.local.get({archiveServices: defaults.archiveServices}, function (items) {
+        const services = items.archiveServices;
+        archiveOnline(url, services);
+        if (services.includes("mhtml")) {
+            chrome.tabs.get(tabId, function (tab) {
+                saveLocal(tab, false);
+            });
+        }
+    });
+}
 
 function showArchive(url, bookmark) {
     // Notify user if we have an archive of the current page, otherwise archive if needed
@@ -197,13 +201,13 @@ function saveLocal(tab, automatic, path) {
 
 // Keyboard shortcuts
 chrome.commands.onCommand.addListener(function (command) {
-    let action;
-    if (command === "archive-page") {
-        action = function (tabs) { archiveOnline(tabs[0].url); };
+    let action = false;
+    if (command === "archive-now") {
+        action = function (tabs) { archiveNow(tabs[0].url, tabs[0].id); };
     } else if (command === "save-local") {
         action = function (tabs) { saveLocal(tabs[0], false); };
     }
-    if (typeof action !== "undefined") {
+    if (action !== false) {
         chrome.tabs.query({active: true, lastFocusedWindow: true}, action);
     }
 });

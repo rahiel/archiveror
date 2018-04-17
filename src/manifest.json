@@ -51,13 +51,13 @@
     },
 
     "commands": {
-        "archive-page": {
+        "archive-now": {
             "suggested_key": {"default": "Alt+Shift+Y"},
-            "description": "Archive current page online"
+            "description": "Archive Now"
         },
         "save-local": {
             "suggested_key": {"default": "Ctrl+Shift+S"},
-            "description": "Save current page locally as MHTML"
+            "description": "Save current page as MHTML"
         }
     },
 

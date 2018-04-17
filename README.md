@@ -4,15 +4,14 @@
 [![License](https://img.shields.io/badge/License-GPLv3+-blue.svg)](https://github.com/rahiel/archiveror/blob/master/LICENSE.txt)
 
 Archiveror is a browser extension that archives webpages by submitting them to
-<https://archive.is>, <https://archive.org> and other archiving services. These
-archives are publicly available, so you then have a backup that you can refer to
-in case the original falls prey to [link rot][].
+[archive.is][], [archive.org][] and other archiving services. These archives are
+publicly available, so you then have a backup that you can refer to in case the
+original falls prey to [link rot][].
 
-Archiveror will also preserve your bookmarks by automatically archiving them in
-the background. Its icon will change when you visit a bookmark it has archived,
-clicking on it opens the page on the archive. Archiving of bookmarks happens
-when you make a new bookmark and when you open an old bookmark. This can be
-disabled.
+Archiveror also preserves your bookmarks by automatically archiving them in the
+background. Its icon changes when you visit a bookmark it has archived, clicking
+on it shows the archive links. Archiving of bookmarks happens when you make a
+new bookmark and when you open an old bookmark. This can be disabled.
 
 You can manually archive webpages by clicking on the icon, using the Alt+Shift+Y
 hotkey (configurable), or via the page's right click context menu. The URL for
@@ -21,13 +20,16 @@ for references and citations.
 
 Happy archiving!
 
+[archive.is]: https://archive.is
+[archive.org]: https://archive.org
 [link rot]: https://en.wikipedia.org/wiki/Link_rot
 
 ## Archiving Services
 
-Archiveror supports several online archiving service. You can choose which one
-to use for manual archiving at the options. You can also select multiple
-services to archive a single page in multiple web archives.
+Archiveror supports several online archiving service. When clicking on the icon,
+you'll see an "Archive Now" button. You can select which archiving services to
+use when you click this button at the options, there you can also select
+multiple services to archive a single page at multiple web archives.
 
 - [**archive.is**](https://archive.is), launched in 2012. Blocks (some)
   advertising and (user tracking) JavaScript. Links:
@@ -58,19 +60,18 @@ services to archive a single page in multiple web archives.
 
 ## Local Saving
 
-Archiveror can also make local copies of webpages. One page will be saved in a
-single [MHTML][] file. Bookmarks will be saved automatically. Pages can also be
-manually saved by either clicking the button or pressing Ctrl+Shift+S. The
-filenames end with the UTC date and time of when the archive was made.
+Archiveror also makes local copies of webpages. It saves one web page in a
+single [MHTML][] file. Save pages manually by either clicking the button or by
+pressing Ctrl+Shift+S. The filenames end with the UTC date and time of when the
+archive was made.
 
-To enable local archiving, right click the Archiveror button, go to the options
-and then pick "Local".
-
-In local archiving mode your bookmarks will be saved in your Downloads directory
-following your bookmark structure. If you move your bookmarks around, Archiveror
-will mirror your changes and likewise move your local archives. For this to work
-you need to check "Allow access to file URLs" at the extensions page. Go to your
-extensions and enable it: <https://i.imgur.com/ahrfe3M.png>.
+To enable local archiving of bookmarks, right click the Archiveror button, go to
+the options and then select "MHTML" at the "Bookmarks" section. With this option
+enabled your bookmarks will be saved in your Downloads directory following your
+bookmark structure. If you move your bookmarks around, Archiveror will mirror
+your changes and likewise move your local archives. For this to work you need to
+check "Allow access to file URLs" at the extensions page. Go to your extensions
+and enable it: <https://i.imgur.com/ahrfe3M.png>.
 
 Local saving is currently only available for Chromium, vote
 for [this bug][1261339] if you want this feature on Firefox. Alternatively

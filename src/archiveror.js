@@ -32,6 +32,7 @@ function archiveOnline(url, services) {
         if (services === undefined) {
             services = items.archiveServices;
         }
+        services = services.filter(s => s !== "mhtml");
         for (let service of services) {
             link = getArchivingURL(url, service, items.email);
 
@@ -66,6 +67,16 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     } else if (message.label === "saveLocal") {
         chrome.tabs.get(message.tabId, function (tab) {
             saveLocal(tab, false);
+        });
+    } else if (message.label === "archiveNow") {
+        chrome.storage.local.get({archiveServices: defaults.archiveServices}, function (items) {
+            let services = items.archiveServices;
+            archiveOnline(message.url, services);
+            if (services.includes("mhtml")) {
+                chrome.tabs.get(message.tabId, function (tab) {
+                    saveLocal(tab, false);
+                });
+            }
         });
     }
 });

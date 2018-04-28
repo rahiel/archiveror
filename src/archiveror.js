@@ -242,9 +242,9 @@ chrome.contextMenus.removeAll(function () {
 chrome.contextMenus.onClicked.addListener(function (info, tab) {
     if (info.menuItemId === "MHTML") {
         saveLocal(tab, false);
-    } else if (info.hasOwnProperty("linkUrl")) {
+    } else if (info.linkUrl) {
         archiveOnline(info.linkUrl, [info.menuItemId]);
-    } else if (info.hasOwnProperty("pageUrl")) {
+    } else if (info.pageUrl) {
         archiveOnline(info.pageUrl, [info.menuItemId]);
     }
 });

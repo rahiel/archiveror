@@ -14,9 +14,9 @@ on it shows the archive links. Archiving of bookmarks happens when you make a
 new bookmark and when you open an old bookmark. This can be disabled.
 
 You can manually archive webpages by clicking on the icon, using the Alt+Shift+Y
-hotkey (configurable), or via the page's right click context menu. The URL for
-the archive is then copied to your clipboard, so you can easily paste the link
-for references and citations.
+hotkey (configurable), via the page's right click context menu, or by
+right-clicking on links on a page. The URL for the archive is then copied to
+your clipboard, so you can easily paste the link for references and citations.
 
 Happy archiving!
 
@@ -35,8 +35,9 @@ multiple services to archive a single page at multiple web archives.
   advertising and (user tracking) JavaScript. Links:
   [Example](https://archive.is/N0yex), [FAQ][faq-archive.is],
   [Wikipedia][wiki-archive.is].
-- [**archive.org**](https://archive.org/web/), launched in 2001. Respects
-  [robots.txt][robot] so it cannot archive all webpages. Links:
+- [**archive.org**](https://archive.org/web/), launched in 2001. Better known as
+  the [Wayback Machine][]. Respects [robots.txt][robot] so it cannot archive all
+  webpages. Links:
   [Example](https://web.archive.org/web/20160420095454/http://physics.weber.edu/schroeder/md/),
   [FAQ][faq-archive.org], [Wikipedia][wiki-archive.org].
 - [**perma.cc**](https://perma.cc/), launched in 2013. Founded by the Harvard
@@ -57,13 +58,14 @@ multiple services to archive a single page at multiple web archives.
 [wiki-archive.is]: https://en.wikipedia.org/wiki/Archive.is
 [wiki-archive.org]: https://en.wikipedia.org/wiki/Internet_Archive
 [wiki-webcite]: https://en.wikipedia.org/wiki/WebCite
+[wayback machine]: https://en.wikipedia.org/wiki/Wayback_Machine
 
 ## Local Saving
 
-Archiveror also makes local copies of webpages. It saves one web page in a
-single [MHTML][] file. Save pages manually by either clicking the button or by
-pressing Ctrl+Shift+S. The filenames end with the UTC date and time of when the
-archive was made.
+Archiveror also makes local copies of webpages. It saves one webpage in a single
+[MHTML][] file. Save pages manually by either clicking the button or by pressing
+Ctrl+Shift+S. The filenames end with the UTC date and time of when the archive
+was made.
 
 To enable local archiving of bookmarks, right click the Archiveror button, go to
 the options and then select "MHTML" at the "Bookmarks" section. With this option

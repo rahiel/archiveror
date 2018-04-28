@@ -219,26 +219,32 @@ chrome.commands.onCommand.addListener(function (command) {
 
 // context menu
 chrome.contextMenus.removeAll(function () {
+    let contexts = ["page", "link"];
     let menu = chrome.contextMenus.create({
         title: "Archive",
-        id: "context-menu"
+        id: "context-menu",
+        contexts: contexts,
     });
     for (let service of services) {
         chrome.contextMenus.create({
             title: service,
             id: service,
-            parentId: menu
+            parentId: menu,
+            contexts: contexts,
         });
     }
     if (hasPageCapture) {
-        chrome.contextMenus.create({type: "separator", id: "separator", parentId: menu});
-        chrome.contextMenus.create({title: "Save MHTML as...", id: "MHTML", parentId: menu});
+        contexts = ["page"];
+        chrome.contextMenus.create({type: "separator", id: "separator", parentId: menu, contexts: contexts});
+        chrome.contextMenus.create({title: "Save MHTML as...", id: "MHTML", parentId: menu, contexts: contexts});
     }
 });
 chrome.contextMenus.onClicked.addListener(function (info, tab) {
     if (info.menuItemId === "MHTML") {
         saveLocal(tab, false);
-    } else {
+    } else if (info.hasOwnProperty("linkUrl")) {
+        archiveOnline(info.linkUrl, [info.menuItemId]);
+    } else if (info.hasOwnProperty("pageUrl")) {
         archiveOnline(info.pageUrl, [info.menuItemId]);
     }
 });

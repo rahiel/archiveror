@@ -3,7 +3,7 @@
     "author": "Rahiel Kasim",
     "description": "Archive webpages on archive.is, archive.org and more or on your own computer in MHTML format. Automatically archive your bookmarks.",
     "homepage_url": "https://github.com/rahiel/archiveror",
-    "version": "0.10.1",
+    "version": "0.11",
     "applications": {
         "gecko": {
             "id": "archiveror@love.addons.mozilla.org",

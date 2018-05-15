@@ -5,6 +5,7 @@ import {
 
 function archive_is(url) {
     if (isLocal(url)) return;
+    const service = "archive.is";
     let request = new XMLHttpRequest();
     request.open("POST", "https://archive.is/submit/", true);
     request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -12,16 +13,47 @@ function archive_is(url) {
     request.onreadystatechange = function () {
         if (request.readyState === 4) {
             let link = request.responseURL;
-            postArchive(url, link);
+            postArchive(url, service, link);
         }
     };
     request.send(params);
+}
 
-    function postArchive(url, link) {
-        chrome.storage.local.set({[url]: link}, function () {
+function archive_org(url) {
+    if (isLocal(url)) return;
+    const service = "archive.org";
+    const baseURL = "https://web.archive.org";
+    const re = /"\/web\/\d+\/.+?"/;
+    fetch(getArchivingURL(url, service, "")).then(function (response) {
+        if (response.ok) {
+            response.text().then(function (text) {
+                const archive = text.match(re)[0].slice(1, -1);
+                const link = baseURL + archive;
+                postArchive(url, service, link);
+            });
+        }
+    });
+}
+
+// lock to prevent postArchive from losing data when invoked multiple times concurrently
+let archiveLock = false;
+
+function postArchive(url, service, data) {
+    // storage: {url1: {service1: data1, service2: data2, ...}, url2: {service: data}, ...}
+    // data is an URL string for online archives, for mhtml search for "mhtml data format"
+    if (!archiveLock) archiveLock = true;
+    else return window.setTimeout(postArchive, 300, url, service, data);
+    chrome.storage.local.get(url, function (items) {
+        if (items[url]) {
+            items[url][service] = data;
+        } else {
+            items[url] = {[service]: data};
+        }
+        chrome.storage.local.set(items, function () {
+            archiveLock = false;
             showArchive(url);
         });
-    }
+    });
 }
 
 function archiveOnline(url, services) {
@@ -47,9 +79,7 @@ function archiveOnline(url, services) {
 
     let re = /.*(?:archive|perma|webcitation)\.(?:is|cc|org).*/;
     function URLToClipboard(thisTabId, changeInfo, tab) {
-        if (thisTabId !== tabId) {  // ignore other tabs
-            return;
-        }
+        if (thisTabId !== tabId) return;  // ignore other tabs
         // remove listeners if the tab was closed and if user navigated away from archive
         if (changeInfo.hasOwnProperty("isWindowClosing") || !re.test(tab.url)) {
             chrome.tabs.onUpdated.removeListener(URLToClipboard);
@@ -89,7 +119,6 @@ function showArchive(url, bookmark) {
     // Notify user if we have an archive of the current page, otherwise archive if needed
     let keys = {
         [url]: false,
-        ["_" + url]: false,
         archiveBookmarks: defaults.archiveBookmarks,
         bookmarkServices: defaults.bookmarkServices
     };
@@ -102,14 +131,16 @@ function showArchive(url, bookmark) {
 
             if (items[url] !== false) {
                 changeBadge(tabs, badgeStyles.alert);
-            } else {
-                if (save && items.bookmarkServices.includes("archive.is")) archive_is(url);
             }
 
-            if (items["_" + url] !== false) {
-                changeBadge(tabs, badgeStyles.alert);
-            } else {
-                if (save && items.bookmarkServices.includes("mhtml")) {
+            function shouldArchive(service) {
+                return items.bookmarkServices.includes(service) && (!items[url] || !items[url].hasOwnProperty(service));
+            }
+
+            if (save) {
+                if (shouldArchive("archive.is")) archive_is(url);
+                if (shouldArchive("archive.org")) archive_org(url);
+                if (shouldArchive("mhtml")) {
                     downloadBlock.push(tabs[0].id);
                     getPath(bookmark, function (path) {
                         saveLocal(tabs[0], save, path);
@@ -154,14 +185,12 @@ function saveDownload(downloadId, url) {
     chrome.downloads.search({id: downloadId}, function (DownloadItems) {
         let download = DownloadItems[0];
         if (download.state === "complete") {
-            let key = "_" + url;
-            let value = {"id": download.id, "filename": download.filename};
-            let data = {};
-            data[key] = value;
-            chrome.storage.local.set(data, function () {
-                downloadBlock.pop(); // unblock moveLocal for bookmark creation
-                showArchive(url);
-            });
+            const service = "mhtml";
+            let data = {"id": download.id, "filename": download.filename}; // mhtml data format
+
+            downloadBlock.pop(); // unblock moveLocal for bookmark creation
+            postArchive(url, service, data);
+
             chrome.downloads.setShelfEnabled(false); // hide download shelf
             window.setTimeout(function () {
                 chrome.downloads.setShelfEnabled(true);
@@ -300,13 +329,13 @@ function moveLocal(id, moveInfo) {
     function moveBookmark(bookmarks) {
         let bookmark = bookmarks[0];
         if (bookmark.hasOwnProperty("url")) {
-            let key = "_" + bookmark.url;
+            let key = bookmark.url;
             chrome.storage.local.get(key, function (items) {
                 let data = items[key];
                 // check if we need to move anything
-                if (typeof data === "undefined") return;  // quit
-                let downloadId = data.id;
-                let url = data.filename;  // absolute file path
+                if ((typeof data === "undefined") || (typeof data.mhtml === "undefined")) return;
+                let downloadId = data.mhtml.id;
+                let url = data.mhtml.filename;  // absolute file path
                 let filename = makeFilename(bookmark.title);
                 getPath(bookmark, function (path) {
                     silentDownload("file://" + url, filename, path, function (newId) {
@@ -344,26 +373,25 @@ function removeBookmark(id, removeInfo) {
     function deleteBookmark(bookmark) {
         let url = bookmark.url;
 
-        let key = "_" + url;
-        chrome.storage.local.get(key, function (items) {
-            // What if deleting the file fails?
-            chrome.storage.local.remove(key);
-            if (items.hasOwnProperty(key) && hasPageCapture) {
-                chrome.downloads.removeFile(items[key].id);
-            }
-        });
-
-        chrome.storage.local.remove(url);
-
         chrome.tabs.query({"url": url}, function (tabs) {
             changeBadge(tabs, badgeStyles.default);
         });
+
+        chrome.storage.local.get(url, function (items) {
+            chrome.storage.local.remove(url);
+            // What if deleting the file fails?
+            if (hasPageCapture && items.hasOwnProperty(url) && items[url].hasOwnProperty("mhtml")) {
+                chrome.downloads.removeFile(items[url].mhtml.id);
+            }
+        });
+
     }
 }
 chrome.bookmarks.onRemoved.addListener(removeBookmark);
 
-// Migrate deprecated "archiveMode" setting. TODO: remove this (from April 2018)
+// Migration code
 chrome.runtime.onInstalled.addListener(function (details) {
+    // Migrate deprecated "archiveMode" setting. TODO: remove this (from April 2018)
     let key = "archiveMode";
     chrome.storage.local.get({[key]: false, bookmarkServices: defaults.bookmarkServices}, function (items) {
         const archiveMode = items[key];
@@ -377,5 +405,30 @@ chrome.runtime.onInstalled.addListener(function (details) {
             }
             chrome.storage.local.remove(key);
         }
+    });
+
+    // Migrate to new data format TODO: remove this (from May 2018)
+    chrome.storage.local.get(null, function (items) {
+        for (let k of Object.keys(items)) {
+            if (typeof items[k] === "string") {
+                let link = items[k];
+                if (link.startsWith("http")) {
+                    items[k] = {"archive.is": link};
+                }
+            }
+        }
+        for (let k of Object.keys(items)) {
+            if (k.startsWith("_")) {
+                let url = k.slice(1);
+                if (items.hasOwnProperty(url)) {
+                    items[url].mhtml = items[k];
+                } else {
+                    items[url] = {"mhtml": items[k]};
+                }
+                delete items[k];
+                chrome.storage.local.remove(k);
+            }
+        }
+        chrome.storage.local.set(items);
     });
 });

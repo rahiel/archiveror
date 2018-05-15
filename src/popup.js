@@ -54,13 +54,13 @@ function showElements() {
     // show elements when they're useful
     chrome.tabs.query({active: true, lastFocusedWindow: true}, function (tabs) {
         let url = tabs[0].url;
-        chrome.storage.local.get([url, "_" + url], function (items) {
+        chrome.storage.local.get(url, function (items) {
             let showBookmarkSection = false;
             if (items[url]) {
-                addArchiveLink(items[url]);
-            }
-            if (items["_" + url]) {
-                addArchiveLink("file://" + items["_" + url].filename);
+                for (let k of Object.keys(items[url])) {
+                    if (k === "mhtml") addArchiveLink("file://" + items[url].mhtml.filename);
+                    else addArchiveLink(items[url][k]);
+                }
             }
 
             if (showBookmarkSection === true) {

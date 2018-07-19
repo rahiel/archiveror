@@ -73,7 +73,9 @@ enabled your bookmarks will be saved in your Downloads directory following your
 bookmark structure. If you move your bookmarks around, Archiveror will mirror
 your changes and likewise move your local archives. For this to work you need to
 check "Allow access to file URLs" at the extensions page. Go to your extensions
-and enable it: <https://i.imgur.com/ahrfe3M.png>.
+and enable it:
+
+![https://i.imgur.com/ahrfe3M.png](https://i.imgur.com/ahrfe3M.png)
 
 Local saving is currently only available for Chromium, vote
 for [this bug][1261339] if you want this feature on Firefox. Alternatively

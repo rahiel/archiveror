@@ -219,17 +219,41 @@ function saveLocal(tab, automatic, path) {
     chrome.pageCapture.saveAsMHTML({tabId: tab.id}, blobToDisk);
 
     function blobToDisk(mhtmlData) {
-        let filename = makeFilename(tab.title);
-        let url = URL.createObjectURL(mhtmlData);
-        if (automatic === true) {
-            silentDownload(url, filename, path, function (downloadId) {
-                saveDownload(downloadId, tab.url);
+        let reader = new FileReader();
+        reader.onload = function () {
+            crypto.subtle.digest("SHA-256", reader.result).then(function (h) {
+                let filename = makeFilename(tab.title, hex(h).slice(0, 8));
+                let url = URL.createObjectURL(mhtmlData);
+                if (automatic === true) {
+                    silentDownload(url, filename, path, function (downloadId) {
+                        saveDownload(downloadId, tab.url);
+                    });
+                } else {
+                    chrome.downloads.download({url: url, filename: filename, saveAs: true}, function (downloadId) {
+                        changeBadge([tab], badgeStyles.default);
+                    });
+                }
             });
-        } else {
-            chrome.downloads.download({url: url, filename: filename, saveAs: true}, function (downloadId) {
-                changeBadge([tab], badgeStyles.default);
-            });
+        };
+        reader.readAsArrayBuffer(mhtmlData);
+    }
+
+    // from: https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/digest (public domain code)
+    function hex(buffer) {
+        let hexCodes = [];
+        let view = new DataView(buffer);
+        for (let i = 0; i < view.byteLength; i += 4) {
+            // Using getUint32 reduces the number of iterations needed (we process 4 bytes each time)
+            let value = view.getUint32(i);
+            // toString(16) will give the hex representation of the number without padding
+            let stringValue = value.toString(16);
+            // We use concatenation and slice for padding
+            let padding = "00000000";
+            let paddedValue = (padding + stringValue).slice(-padding.length);
+            hexCodes.push(paddedValue);
         }
+        // Join all the hex strings into one
+        return hexCodes.join("");
     }
 }
 

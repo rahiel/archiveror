@@ -49,8 +49,8 @@ export function sanitizeFilename(title) {
     return name;
 }
 
-export function makeFilename(title) {
-    return sanitizeFilename(title) + "_" + getTimestamp() + ".mhtml";
+export function makeFilename(title, hash) {
+    return sanitizeFilename(title) + "_" + getTimestamp() + "_" + hash + ".mhtml";
 }
 
 function getTimestamp() {

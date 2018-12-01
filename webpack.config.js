@@ -1,6 +1,4 @@
 /* global __dirname */
-const webpack = require("webpack");
-
 module.exports = {
     entry: {
         "dist/archiveror": "./src/archiveror.js",
@@ -13,16 +11,16 @@ module.exports = {
     },
     devtool: "source-map",
     module: {
-        loaders: [
+        rules: [
             {
-                loader: "babel-loader",
                 test: /\.js$/,
-                exclude: /node_modules/
+                exclude: /node_modules/,
+                loader: "babel-loader",
+                options: {
+                    cacheDirectory: true,
+                }
             },
             { test: /\.css$/, loader: "style!css" }
         ]
     },
-    plugins: [
-        new webpack.optimize.ModuleConcatenationPlugin()
-    ]
 };

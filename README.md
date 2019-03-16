@@ -42,7 +42,7 @@ multiple services to archive a single page at multiple web archives.
   [FAQ][faq-archive.org], [Wikipedia][wiki-archive.org].
 - [**perma.cc**](https://perma.cc/), launched in 2013. Founded by the Harvard
   Law School Library. Provides accounts to manage archived links. Free accounts
-  can create 10 archives per month. Links:
+  can only create 10 archives. Links:
   [Example](https://perma.cc/M8Q2-B8FY), [FAQ][faq-perma].
 - [**webcitation.org**](http://www.webcitation.org), launched in 1997, respects
   robots.txt. You need to set an email address at the options to use it. Has a
@@ -65,7 +65,7 @@ multiple services to archive a single page at multiple web archives.
 Archiveror also makes local copies of webpages. It saves one webpage in a single
 [MHTML][] file. Save pages manually by either clicking the button or by pressing
 Ctrl+Shift+S. The filenames end with the UTC date and time of when the archive
-was made.
+was made, and with the first 4 bytes of the SHA-256 hash of the archive.
 
 To enable local archiving of bookmarks, right click the Archiveror button, go to
 the options and then select "MHTML" at the "Bookmarks" section. With this option

@@ -60,7 +60,11 @@ function archiveOnline(url, services) {
     // archive url online at services (a list of strings)
     if (isLocal(url)) return;  // don't archive internal pages, "file://", "chrome://", etc.
     let tabId, link;
-    chrome.storage.local.get({archiveServices: defaults.archiveServices, email: defaults.email}, function (items) {
+    chrome.storage.local.get({
+        archiveServices: defaults.archiveServices,
+        background: defaults.background,
+        email: defaults.email
+    }, function (items) {
         if (services === undefined) {
             services = items.archiveServices;
         }
@@ -68,7 +72,7 @@ function archiveOnline(url, services) {
         for (let service of services) {
             link = getArchivingURL(url, service, items.email);
 
-            chrome.tabs.create({url: link}, function (tab) {
+            chrome.tabs.create({url: link, active: !items.background}, function (tab) {
                 tabId = tab.id;
                 // support updating clipboard with new link from archive.is "save the page again"
                 chrome.tabs.onUpdated.addListener(URLToClipboard);

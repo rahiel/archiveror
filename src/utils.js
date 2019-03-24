@@ -4,6 +4,7 @@ export const defaults = {
     archiveBookmarks: true,
     archiveDir: "Archiveror",
     archiveServices: ["archive.is"],
+    background: false,
     bookmarkServices: ["archive.is"],
     email: "",
 };

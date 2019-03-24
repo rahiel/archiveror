@@ -20,11 +20,13 @@ function saveOptions() {
     let dir = document.getElementById("dir").value;  // TODO: check dir for forbidden characters
     let email = document.getElementById("email").value;
     let bookmarks = document.getElementById("bookmarks").checked;
+    let background = document.getElementById("background").checked;
 
     chrome.storage.local.set({
         archiveBookmarks: bookmarks,
         archiveDir: dir,
         archiveServices: services,
+        background: background,
         bookmarkServices: bookmarkServices,
         email: email,
     });
@@ -35,6 +37,7 @@ function restoreOptions() {
         archiveBookmarks: defaults.archiveBookmarks,
         archiveDir: defaults.archiveDir,
         archiveServices: defaults.archiveServices,
+        background: defaults.background,
         bookmarkServices: defaults.bookmarkServices,
         email: defaults.email,
     }, setOptions);
@@ -42,6 +45,10 @@ function restoreOptions() {
     function setOptions(items) {
         if (items.archiveBookmarks === true) {
             document.getElementById("bookmarks").checked = true;
+        }
+
+        if (items.background === true) {
+            document.getElementById("background").checked = true;
         }
 
         document.getElementById("dir").value = items.archiveDir;

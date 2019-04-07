@@ -1,3 +1,5 @@
+import "@babel/polyfill";
+
 import {
     defaults, getArchivingURL, hasPageCapture, isLocal, makeFilename, sanitizeFilename, services, writeClipboard
 } from "./utils.js";
@@ -6,17 +8,28 @@ import {
 function archive_is(url) {
     if (isLocal(url)) return;
     const service = "archive.is";
-    let request = new XMLHttpRequest();
-    request.open("POST", "https://archive.is/submit/", true);
-    request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-    let params = "url=" + encodeURIComponent(url);
-    request.onreadystatechange = function () {
-        if (request.readyState === 4) {
-            let link = request.responseURL;
+    fetch("https://archive.is")
+        .then(response => response.text())
+        .then(async (text) => {
+            let html = new DOMParser().parseFromString(text, "text/html");
+            let submitid = html.querySelector(`input[name="submitid"]`).value;
+
+            let response = await fetch("https://archive.is/submit/", {
+                method: "POST",
+                headers: {"Content-Type": "application/x-www-form-urlencoded"},
+                body: "url=" + encodeURIComponent(url) + "&submitid=" + encodeURIComponent(submitid)
+            });
+            let link;
+            if (response.url.includes("/submit")) {
+                let text = await response.text();
+                let html = new DOMParser().parseFromString(text, "text/html");
+                let re = /"(https?:\/\/archive\..+?\/.+?)"/;
+                link = text.match(re)[1];
+            } else {
+                link = response.url;
+            }
             postArchive(url, service, link);
-        }
-    };
-    request.send(params);
+        });
 }
 
 function archive_org(url) {

@@ -3,7 +3,7 @@ export const services = ["archive.is", "archive.org", "perma.cc", "webcitation.o
 export const defaults = {
     archiveBookmarks: true,
     archiveDir: "Archiveror",
-    archiveServices: ["archive.is"],
+    archiveServices: ["archive.is", "archive.org"],
     background: false,
     bookmarkServices: ["archive.is"],
     email: "",

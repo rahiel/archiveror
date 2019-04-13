@@ -22,7 +22,6 @@ function archive_is(url) {
             let link;
             if (response.url.includes("/submit")) {
                 let text = await response.text();
-                let html = new DOMParser().parseFromString(text, "text/html");
                 let re = /"(https?:\/\/archive\..+?\/.+?)"/;
                 link = text.match(re)[1];
             } else {

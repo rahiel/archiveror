@@ -5,7 +5,7 @@ export const defaults = {
     archiveDir: "Archiveror",
     archiveServices: ["archive.is", "archive.org"],
     background: false,
-    bookmarkServices: ["archive.is"],
+    bookmarkServices: ["archive.is", "archive.org"],
     email: "",
 };
 

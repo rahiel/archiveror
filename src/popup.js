@@ -68,8 +68,16 @@ function showElements() {
             }
 
             function addArchiveLink(url) {
+                let displayLink = url;
+                if (displayLink.startsWith("https://")) {
+                    displayLink = displayLink.slice(8);
+                }
+                if (displayLink.length > 36) {
+                    displayLink = displayLink.slice(0, 36) + "...";
+                }
+
                 let e = document.createElement("li");
-                e.innerHTML = `<a>${url}</a>`;
+                e.innerHTML = `<a>${displayLink}</a>`;
                 e.onclick = openURL(url);
                 document.getElementById("archiveList").appendChild(e);
                 showBookmarkSection = true;

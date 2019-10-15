@@ -1,5 +1,6 @@
 body {
     margin: 8px;
+    text-align: center;
 }
 
 button {
@@ -8,9 +9,8 @@ button {
     border: 1px solid #2e6da4;
     border-radius: 4px;
     padding: 6px 12px;
-    margin: 5px 3px;
-    width: 95%;
-    text-align: center;
+    margin: 5px 30px;
+    width: 150px;
     font-size: 14px;
 }
 
@@ -33,10 +33,13 @@ a:hover { text-decoration: underline; }
     display: none;
 }
 
+#archiveList {
+    text-align: left;
+}
+
 footer {
     color: #555;
     font-size: 10px;
-    text-align: center;
     margin-top: 7px;
 }
 footer > a {

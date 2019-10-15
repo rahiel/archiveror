@@ -178,7 +178,7 @@ function changeBadge(tabs, style) {
 }
 const badgeStyles = {
     default: ["Archiveror", "", "#5dce2d"],
-    alert: ["Archiveror (bookmark archived)", "!", "#FFB90F"],
+    alert: ["Archiveror (bookmark archived)", "✔", "#0f7016"],
     wait: ["Archiveror (busy)", "WAIT", "#d80f30"],
 };
 

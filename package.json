@@ -17,17 +17,17 @@
     "url": "https://github.com/rahiel/archiveror/issues"
   },
   "dependencies": {
-    "@babel/polyfill": "^7.4.3"
+    "@babel/polyfill": "^7.6.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.4.3",
-    "@babel/preset-env": "^7.4.3",
-    "babel-loader": "^8.0.5",
-    "eslint": "^5.16.0",
+    "@babel/core": "^7.6.4",
+    "@babel/preset-env": "^7.6.3",
+    "babel-loader": "^8.0.6",
+    "eslint": "^6.5.1",
     "source-map-loader": "^0.2.4",
-    "web-ext": "^3.0.0",
-    "webpack": "^4.29.6",
-    "webpack-cli": "^3.3.0"
+    "web-ext": "^3.2.0",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.9"
   },
   "browserslist": [
     "firefox >= 52",
